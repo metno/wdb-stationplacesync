@@ -1,0 +1,28 @@
+==============================================================
+wdb-stationload --- loading weather station meta-data into WDB
+==============================================================
+
+Norwegian Meteorological Institute (met.no)
+Box 43 Blindern
+0313 OSLO
+NORWAY
+
+email: aleksandarb@met.no
+
+WDB is a database system for storage and retrieval of weather and 
+water observations and forecasts. It handles both gridded data
+(raster) and point data.
+
+wdb-stationlaod:
+    is a loading program used to load met.no weather stations information into wdb.
+
+
+To compile and run app make sure you have wdb libraries.
+Please check that WDB version supports wci functions like:
+    wci.addplacepoint
+    wci.addorupdateplacepoint
+
+The configure line might look like:
+    ./configure wdbload_CFLAGS=-I<local-dir>/include LDFLAGS=-L<local-dir>/lib wdbload_LIBS=-lwdbLoad
+
+STINFOSYS (see: http://stinfosys/) will be used as authoritative source for weather stations meta-data.
