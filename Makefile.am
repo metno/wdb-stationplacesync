@@ -10,19 +10,19 @@
 ACLOCAL_AMFLAGS = 		-I config/m4
 				
 # Share directory organization
-wdbstationsloaderdir = 			$(datadir)/wdb
-sqldir = 			$(wdbstationsloaderdatadir)/sql
-wdbstationsloaderlibdir = 			$(libdir)/wdb
-pkgsysconfdir = 		@sysconfdir@/wdbstationsloader
+stationLoaddir = 			$(datadir)/wdb
+sqldir = 			$(stationLoaddatadir)/sql
+stationLoadlibdir = 			$(libdir)/wdb
+pkgsysconfdir = 		@sysconfdir@/stationLoad
 
 
 # Setting Targets
-wdbstationsloader_PROGRAMS = wdbstationsloader
+stationLoad_PROGRAMS = stationLoad
 
 # This is to be replaced by a "find wdb" macro:
 AM_CXXFLAGS = -DSYSCONFDIR=\"$(pkgsysconfdir)\" $(wdb_CFLAGS)
 	
-wdbstationsloader_LDADD = $(wdb_LIBS) -lwdbLoad -lwdbConfig -lwdbProj -lwdbExcept -lwdbLog -lwdbMath
+stationLoad_LDADD = $(wdb_LIBS) -lwdbLoad -lwdbConfig -lwdbProj -lwdbExcept -lwdbLog -lwdbMath
 
 
 #SED_SUBSTITUTION = 		sed s/__WDB_VERSION__/$(WDB_VERSION)/g $<\
@@ -46,12 +46,7 @@ wdbstationsloader_LDADD = $(wdb_LIBS) -lwdbLoad -lwdbConfig -lwdbProj -lwdbExcep
 
 CLEANFILES =
 EXTRA_DIST =
-
-#include doc/feltLoad.mk
-#include etc/feltLoad.mk
 include src/sources.mk
-#include test/feltLoad.mk
-#include test/configuration/feltLoad.mk
 
 include config/mk/debian.mk
 

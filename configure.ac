@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 AC_PREREQ(2.59)
-AC_INIT(wdbstationsloader, 1.0.0, [parch@lists.met.no])
+AC_INIT(stationLoad, 1.0.0, [wdb@lists.met.no])
 # Config
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])

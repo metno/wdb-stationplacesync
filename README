@@ -1,5 +1,5 @@
 ==============================================================
-wdb-stationload --- loading weather station meta-data into WDB
+stationLoad --- loading weather station meta-data into WDB
 ==============================================================
 
 Norwegian Meteorological Institute (met.no)
@@ -13,7 +13,7 @@ WDB is a database system for storage and retrieval of weather and
 water observations and forecasts. It handles both gridded data
 (raster) and point data.
 
-wdb-stationlaod:
+stationLoad:
     is a loading program used to load met.no weather stations information into wdb.
 
 
