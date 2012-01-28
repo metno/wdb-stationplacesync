@@ -27,12 +27,14 @@
 */
 
 
-#ifndef GETALLSTISTATIONS_H_
-#define GETALLSTISTATIONS_H_
+#ifndef GETALLWDBSTATIONS_H_
+#define GETALLWDBSTATIONS_H_
 
 #include "../WDBDatabaseConnection.h"
 #include "../STLoaderConfiguration.h"
 #include "../STInfosysDatabaseConnection.h"
+#include "wciTransactors.h"
+
 // WDB
 //
 #include <wdbException.h>
@@ -54,13 +56,13 @@ namespace wdb { namespace load {
     /**
      * Transactor to create a user
      */
-    class GetAllSTIStations : public pqxx::transactor<>
+    class GetAllWDBStations : public pqxx::transactor<>
     {
     public:
         /**
          * Default Constructor
          */
-        GetAllSTIStations(std::map<std::string, STIStationRecord>& out)
+        GetAllWDBStations(std::map<std::string, WDBStationRecord>& out)
             : pqxx::transactor<>("GetAllSTIStations"), out_(out)
         {
             // NOOP
@@ -72,11 +74,12 @@ namespace wdb { namespace load {
         void operator()(argument_type &T)
         {
             std::string query =
-                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 "
-                    " INNER JOIN (SELECT stationid, MAX(edited_at) AS last_updated, MAX(fromtime) AS fromtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) st2 "
-                    " ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE (st1.lon IS NOT NULL AND st1.lat IS NOT NULL);";
+                    " SELECT tb1.placeid id, tb1.placename AS name, tb1.originalsrid srid, ST_AsText(tb1.placegeometry) wkt, "
+                    " tb2.placenamevalidfrom AS validfrom, tb2.placenamevalidto AS validto "
+                    " FROM wci.getPlacePoint(NULL) tb1 INNER JOIN (select * from wci.getPlaceName(NULL, NULL)) AS tb2 "
+                    " ON (tb1.placeid = tb2.placeid);";
+
             R_ = T.exec(query);
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             std::cerr << query << std::endl;
             std::cerr << " R size: " << R_.size()<< std::endl;
         }
@@ -86,29 +89,28 @@ namespace wdb { namespace load {
          */
         void on_commit()
         {
-            std::cerr<<__FUNCTION__<<" # stations: " << R_.size()<< std::endl;
             out_.clear();
             size_t rCount = R_.size();
             for(size_t r = 0; r < rCount; ++r) {
-                STIStationRecord rec;
+                WDBStationRecord rec;
                 rec.id_   = R_[r][0].as<std::string>();
                 rec.name_ = R_[r][1].as<std::string>();
-                rec.lon_  = R_[r][2].as<float>();
-                rec.lat_  = R_[r][3].as<float>();
-                rec.wmo_  = R_[r][4].is_null() ? std::string() : R_[r][4].as<std::string>();
+                rec.srid_ = R_[r][2].as<std::string>();
+                rec.wkt_  = R_[r][3].as<std::string>();
+                rec.from_ = R_[r][4].as<std::string>();
+                rec.to_   = R_[r][5].as<std::string>();
 
-                assert(!R_[r][5].is_null());
-                rec.from_ = R_[r][5].as<std::string>()+std::string("+00");
+                if(out_.count(rec.id_) != 0) {
+                    std::cerr << "already have entry with STATIONID: " << rec.id_ <<std::endl;
+                }
 
-                rec.to_   = R_[r][6].is_null() ? std::string("infinity") : R_[r][6].as<std::string>()+std::string("+00");
+    //            std::cerr
+    //                    << rec.id_ <<" | "<< rec.name_ << " | " << rec.srid_<< " | "
+    //                    << rec.wkt_ << "|"<< rec.from_ << " | " << rec.to_
+    //                    << std::endl;
 
-                if(out_.count(rec.id_) != 0)
-                    std::cout << "EXISTS STATIONID: " << rec.id_<<std::endl;
-
-                out_.insert(std::make_pair<std::string, STIStationRecord>(rec.id_, rec));
+                out_.insert(std::make_pair<std::string, WDBStationRecord>(rec.name_, rec));
             }
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
-            log.infoStream() << "wdb.load.getallstistations";
         }
 
         /**
@@ -137,10 +139,10 @@ namespace wdb { namespace load {
         /// The result returned by the query
         pqxx::result R_;
         ///
-        std::map<std::string, STIStationRecord>& out_;
+        std::map<std::string, WDBStationRecord>& out_;
     };
 
 } } /* end namespaces */
 
 
-#endif /*GETALLSTISTATIONS_H_*/
+#endif /*GETALLWDBSTATIONS_H_*/

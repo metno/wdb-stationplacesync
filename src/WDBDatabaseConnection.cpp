@@ -32,6 +32,7 @@
 #include "transactors/updatePlacePoint.h"
 #include "transactors/wciTransactors.h"
 #include "transactors/getAllSTIStations.h"
+#include "transactors/getAllWDBStations.h"
 
 // WDB
 //
@@ -84,26 +85,11 @@ namespace wdb { namespace load {
     WDBDatabaseConnection::WDBDatabaseConnection(const STLoaderConfiguration & config)
         : pqxx::connection(config.database().pqDatabaseConnection()), config_(new STLoaderConfiguration(config))
     {
-
-        std::cerr<<__FUNCTION__<<" : "<<"stationidNameSpace : "<<config.loading().stationidNameSpace<<std::endl;
-        std::cerr<<__FUNCTION__<<" : "<<"wmonoNameSpace : "    <<config.loading().wmonoNameSpace<<std::endl;
-
-//        if(config.loading().stationidNameSpace.empty())
-//            perform(WciBegin((config.database().user)));
-//        else if(config.loading().stationidNameSpace == "test")
-//            perform(WciBegin(config.database().user, 999, 999, 999));
-//        else if(config.loading().stationidNameSpace == "default")
-//            perform(WciBegin(config.database().user, 0, 0, 0));
-//        else
-//            throw std::logic_error("Unknown name space specification: " + config.loading().stationidNameSpace);
-
         setup_();
     }
 
     WDBDatabaseConnection::~WDBDatabaseConnection()
     {
-//        perform(WciEnd(), 1);
-
         delete config_;
     }
 
@@ -120,42 +106,9 @@ namespace wdb { namespace load {
         {
             perform(WciBegin((config_->database().user)));
 
-            // Create a transaction.
-            pqxx::work transaction(*this);
+            perform(GetAllWDBStations(stations_by_id));
 
-            // This is the read query
-            std::string query =
-                    " SELECT tb1.placeid id, tb1.placename AS name, tb1.originalsrid srid, ST_AsText(tb1.placegeometry) wkt, "
-                    " tb2.placenamevalidfrom AS validfrom, tb2.placenamevalidto AS validto "
-                    " FROM wci.getPlacePoint(NULL) tb1 INNER JOIN (select * from wci.getPlaceName(NULL, NULL)) AS tb2 "
-                    " ON (tb1.placeid = tb2.placeid);";
-
-            pqxx::result rows = transaction.exec(query);
-            size_t rCount = rows.size();
-            for(size_t r = 0; r < rCount; ++r) {
-                WDBStationRecord rec;
-                rec.id_   = rows[r][0].as<std::string>();
-                rec.name_ = rows[r][1].as<std::string>();
-                rec.srid_ = rows[r][2].as<std::string>();
-                rec.wkt_  = rows[r][3].as<std::string>();
-                rec.from_ = rows[r][4].as<std::string>();
-                rec.to_   = rows[r][5].as<std::string>();
-
-                if(stations_by_id.count(rec.id_) != 0) {
-                    log.debugStream() << "already have entry with STATIONID: " << rec.id_;
-                }
-
-    //            std::cerr
-    //                    << rec.id_ <<" | "<< rec.name_ << " | " << rec.srid_<< " | "
-    //                    << rec.wkt_ << "|"<< rec.from_ << " | " << rec.to_
-    //                    << std::endl;
-
-                stations_by_id.insert(std::make_pair<std::string, WDBStationRecord>(rec.name_, rec));
-            }
-
-            transaction.commit();
-
-            std::cerr << "# rows by STATIONID: "<< rCount << std::endl;
+            std::cerr << "# rows by STATIONID: "<< stations_by_id.size() << std::endl;
 
             perform(WciEnd(), 1);
         }
@@ -164,42 +117,9 @@ namespace wdb { namespace load {
         {
             perform(WciBegin((config_->database().user), 0, 4365, 0));
 
-            // Create a transaction.
-            pqxx::work transaction(*this);
+            perform(GetAllWDBStations(stations_by_wmono));
 
-            // This is the read query
-            std::string query =
-                    " SELECT tb1.placeid id, tb1.placename AS name, tb1.originalsrid srid, ST_AsText(tb1.placegeometry) wkt, "
-                    " tb2.placenamevalidfrom AS validfrom, tb2.placenamevalidto AS validto "
-                    " FROM wci.getPlacePoint(NULL) tb1 INNER JOIN (select * from wci.getPlaceName(NULL, NULL)) AS tb2 "
-                    " ON (tb1.placeid = tb2.placeid);";
-
-            pqxx::result rows = transaction.exec(query);
-            size_t rCount = rows.size();
-            for(size_t r = 0; r < rCount; ++r) {
-                WDBStationRecord rec;
-                rec.id_   = rows[r][0].as<std::string>();
-                rec.name_ = rows[r][1].as<std::string>();
-                rec.srid_ = rows[r][2].as<std::string>();
-                rec.wkt_  = rows[r][3].as<std::string>();
-                rec.from_ = rows[r][4].as<std::string>();
-                rec.to_   = rows[r][5].as<std::string>();
-
-                if(stations_by_wmono.count(rec.id_) != 0) {
-                    log.debugStream() << "already have entry with WMONO: " << rec.id_;
-                }
-
-    //            std::cerr
-    //                    << rec.id_ <<" | "<< rec.name_ << " | " << rec.srid_<< " | "
-    //                    << rec.wkt_ << "|"<< rec.from_ << " | " << rec.to_
-    //                    << std::endl;
-
-                stations_by_wmono.insert(std::make_pair<std::string, WDBStationRecord>(rec.name_, rec));
-            }
-
-            transaction.commit();
-
-            std::cerr << "# rows by WMONO : "<< rCount << std::endl;
+            std::cerr << "# rows by WMONO : "<< stations_by_wmono.size() << std::endl;
 
             perform(WciEnd(), 1);
         }
@@ -225,10 +145,11 @@ namespace wdb { namespace load {
                 if(stations_by_id.find(sti_st.id_) == stations_by_id.end()) {
                     std::string wkt("POINT(");
                     wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
-//                    if(config_->output().list)
-//                        std::cerr<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
-//                    else
-//                        perform(UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
+
+                    std::cerr<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+
+                    if(!config_->output().list)
+                        perform(UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
                 } else {
                     // check if station param have been changed
                     WDBStationRecord wdb_st = stations_by_id[sti_st.id_];
@@ -253,10 +174,11 @@ namespace wdb { namespace load {
                     {
                         std::string wkt("POINT(");
                         wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
-//                        if(config_->output().list)
-//                            std::cerr<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
-//                        else
-//                            perform(UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
+
+                        std::cerr<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+
+                        if(!config_->output().list)
+                            perform(UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
                     }
 
                     GEOSGeom_destroy(g);
@@ -282,10 +204,11 @@ namespace wdb { namespace load {
                 if(stations_by_wmono.find(sti_st.wmo_) == stations_by_wmono.end()) {
                     std::string wkt("POINT(");
                     wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
-//                    if(config_->output().list)
-//                        std::cerr<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
-//                    else
-//                        perform(UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
+
+                    std::cerr<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+
+                    if(!config_->output().list)
+                        perform(UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
 
                 } else {
                     // check if station param have been changed
@@ -311,10 +234,11 @@ namespace wdb { namespace load {
                     {
                         std::string wkt("POINT(");
                         wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
-//                        if(config_->output().list)
-//                            std::cerr<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
-//                        else
-//                            perform(UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
+
+                        std::cerr<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+
+                        if(!config_->output().list)
+                            perform(UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
                     }
 
                     GEOSGeom_destroy(g);

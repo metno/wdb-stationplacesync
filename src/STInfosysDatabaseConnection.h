@@ -53,7 +53,7 @@ namespace wdb { namespace load {
         explicit STInfosysDatabaseConnection(const STLoaderConfiguration& configuration);
         virtual ~STInfosysDatabaseConnection();
 
-        void getAllStations(std::map<std::string, STIStationRecord>& result);
+        void getAllStations(std::map<std::string, STIStationRecord>& stations);
 
     private:
         void setup_();

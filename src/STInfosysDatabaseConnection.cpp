@@ -27,7 +27,7 @@
  */
 
 #include "STInfosysDatabaseConnection.h"
-
+#include "transactors/getAllSTIStations.h"
 // WDB
 //
 #include <wdbLogHandler.h>
@@ -65,38 +65,11 @@ namespace wdb { namespace load {
         // NOOOP
     }
 
-    void STInfosysDatabaseConnection::getAllStations(std::map<std::string, STIStationRecord>& result)
+    void STInfosysDatabaseConnection::getAllStations(std::map<std::string, STIStationRecord>& stations)
     {
         WDB_LOG & log = WDB_LOG::getInstance("wdb.load.stidatabaseconnection");
-
-        // Create a transaction.
-        pqxx::work transaction(*this);
-        // This is the read query
-        std::string query =
-                          " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 INNER JOIN (SELECT stationid, MAX(edited_at) AS last_updated, MAX(fromtime) AS fromtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) st2 ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE (st1.lon IS NOT NULL AND st1.lat IS NOT NULL);";
-
-        pqxx::result rows = transaction.exec(query);
-        size_t rCount = rows.size();
-        for(size_t r = 0; r < rCount; ++r) {
-            STIStationRecord rec;
-            rec.id_   = rows[r][0].as<std::string>();
-            rec.name_ = rows[r][1].as<std::string>();
-            rec.lon_  = rows[r][2].as<float>();
-            rec.lat_  = rows[r][3].as<float>();
-            rec.wmo_  = rows[r][4].is_null() ? std::string() : rows[r][4].as<std::string>();
-
-            assert(!rows[r][5].is_null());
-            rec.from_ = rows[r][5].as<std::string>()+std::string("+00");
-
-            rec.to_   = rows[r][6].is_null() ? std::string("infinity") : rows[r][6].as<std::string>()+std::string("+00");
-
-            if(result.count(rec.id_) != 0)
-                std::cout << "EXISTS STATIONID: " << rec.id_<<std::endl;
-
-            result.insert(std::make_pair<std::string, STIStationRecord>(rec.id_, rec));
-        }
-
-        log.debugStream() << "result size: "<< rCount;
+        perform(GetAllSTIStations(stations));
+        std::cerr<<__FUNCTION__<<": " << "# STI stations: "<< stations.size()<<std::endl;
     }
 
 } } /* end namespaces */
