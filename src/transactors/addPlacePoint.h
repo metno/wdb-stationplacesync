@@ -59,6 +59,7 @@ namespace wdb { namespace load {
          * @param 	placeName	placeName of the new/existing point
          * @param 	geometry	place geometry as WKT
          */
+
         AddPlacePoint(const std::string& placename, const std::string& geometry,
                       const std::string& validfrom, const std::string& validto = "infinity",
                       const std::string& transactorname = "AddPlacePoint")
@@ -67,7 +68,7 @@ namespace wdb { namespace load {
               validfrom_(validfrom), validto_(validto)
         {
             std::ostringstream query;
-            query << "SELECT wci.addPlacePoint"<<"("<<"\'"<< placeName_ <<"\'"<< "," << "ST_GeomFromText("<< "\'"<< geometry_<<"\'"<<", 4030 )" << "," << "\'" << validfrom_ << "\'" << "," << "\'" << validto_ << "\'" << ");";
+            query << "SELECT wci.addOrUpdatePlacePoint"<<"("<<"\'"<< placeName_ <<"\'"<< "," << "ST_GeomFromText("<< "\'"<< geometry_<<"\'"<<", 4030 )" << "," << "\'" << validfrom_ << "\'" << "," << "\'" << validto_ << "\'" << ");";
             query_ = query.str();
         }
 

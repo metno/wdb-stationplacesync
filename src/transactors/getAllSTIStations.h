@@ -48,7 +48,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <algorithm>
 
 namespace wdb { namespace load {
 
@@ -61,8 +60,8 @@ namespace wdb { namespace load {
         /**
          * Default Constructor
          */
-        GetAllSTIStations(std::map<std::string, STIStationRecord>& out, const std::string transactorname = "GetAllSTIStations")
-            : pqxx::transactor<>(transactorname), out_(out)
+        GetAllSTIStations(const std::string transactorname = "GetAllSTIStations")
+            : pqxx::transactor<>(transactorname)
         {
             // NOOP
         }
@@ -73,21 +72,50 @@ namespace wdb { namespace load {
         void operator()(argument_type &T)
         {
             std::string query =
-                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.fromtime, st1.totime FROM station st1 "
-                    " INNER JOIN "
-                    " (SELECT stationid, MAX(edited_at) AS updated, MAX(fromtime) AS fromtime FROM station WHERE (lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) AS st2 "
-                    " ON (st1.stationid = st2.stationid AND st1.edited_at = st2.updated AND st1.fromtime = st2.fromtime) WHERE (st1.lon IS NOT NULL AND st1.lat IS NOT NULL);" ;
-
+                              " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono FROM station st1 "
+                              " INNER JOIN "
+                              " (SELECT stationid, MAX(edited_at) AS last_update_time FROM station GROUP BY stationid) stfiltered "
+                              " ON (st1.stationid = stfiltered.stationid AND st1.edited_at = stfiltered.last_update_time) "
+                              " WHERE (st1.lon IS NOT NULL AND st1.lat IS NOT NULL AND st1.name IS NOT NULL AND st1.wmono IS NOT NULL AND st1.totime IS NULL) ORDER BY st1.name; ";
             R_ = T.exec(query);
-
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             std::cerr << query << std::endl;
+            std::cerr << " R size: " << R_.size()<< std::endl;
+
+//            for(size_t r = 0; r < R_.size(); ++r) {
+//                STIStationRecord rec;
+//                rec.id_   = R_[r][0].as<std::string>();
+//                rec.name_ = R_[r][1].as<std::string>();
+//                rec.lon_  = R_[r][2].as<float>();
+//                rec.lat_  = R_[r][3].as<float>();
+//                rec.wmo_  = R_[r][4].as<int>();
+
+//                std::cerr<< rec.id_<<" | "<< rec.name_<< " | " <<std::endl;
+//            }
         }
 
-        void getStations()
+        void getStations(std::map<std::string, STIStationRecord>& result)
         {
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wdbdatabaseconnection");
-            std::cerr<<__FUNCTION__<<" stations_ size: " << stations_.size()<< std::endl;
+
+            std::cerr << " R size: " << R_.size()<< std::endl;
+
+            for(size_t r = 0; r < R_.size(); ++r) {
+                STIStationRecord rec;
+                rec.id_   = R_[r][0].as<std::string>();
+                rec.name_ = R_[r][1].as<std::string>();
+                rec.lon_  = R_[r][2].as<float>();
+                rec.lat_  = R_[r][3].as<float>();
+                rec.wmo_  = R_[r][4].as<int>();
+
+                if(result.count(rec.id_) != 0) {
+                    log.debugStream() << "already have entry with STATIONID: " << rec.id_;
+                }
+
+                std::cerr<< rec.id_<<" | "<< rec.name_<< " | " <<std::endl;
+
+                result.insert(std::make_pair<std::string, STIStationRecord>(rec.name_, rec));
+            }
         }
 
         /**
@@ -95,39 +123,9 @@ namespace wdb { namespace load {
          */
         void on_commit()
         {
+            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
-            if ( R_.size() == 0 ) {
-                log.debugStream() << "R_  empty";
-            } else {
-                std::cerr<<__FUNCTION__<<" R_ size: " << R_.size()<< std::endl;
-
-                for(size_t r = 0; r < R_.size(); ++r) {
-                    STIStationRecord rec;
-                    rec.id_   = R_[r][0].as<std::string>();
-                    rec.name_ = R_[r][1].as<std::string>();
-                    rec.lon_  = R_[r][2].as<float>();
-                    rec.lat_  = R_[r][3].as<float>();
-//                    rec.wmo_  = R_[r][4].is_null() ? std::string() : R_[r][4].as<std::string>();
-                    rec.from_ = R_[r][4].is_null() ? std::string() : R_[r][4].as<std::string>()+"+00";           // adding time zone for later comparison
-                    rec.to_   = R_[r][5].is_null() ? std::string("infinity") : R_[r][5].as<std::string>()+"+00"; // adding time zone for later comparison
-
-                    if(stations_.count(rec.id_) != 0) {
-                        std::cerr << "already have entry with STATIONID: " << rec.id_ << std::endl;
-                    }
-
-//                    std::cerr
-//                            << __FUNCTION__ << " "
-//                            << rec.id_ <<" | "<< rec.name_ << " | " << rec.lon_<< " | "
-//                            << rec.lat_ << "|"<< rec.from_ << " | " << rec.to_
-//                            << std::endl;
-
-                    stations_.insert(std::make_pair<std::string, STIStationRecord>(rec.id_, rec));
-                }
-
-                stations_.swap(out_);
-
-                std::cerr<<__FUNCTION__<<" out_ size: " << out_.size()<< std::endl;
-            }
+            log.infoStream() << "wdb.load.getallstistations";
         }
 
         /**
@@ -153,13 +151,11 @@ namespace wdb { namespace load {
         }
 
     protected:
+        /// The result returned by the query
         pqxx::result R_;
-        std::map<std::string, STIStationRecord>& out_;
-        std::map<std::string, STIStationRecord>  stations_;
-
     };
 
 } } /* end namespaces */
 
-//SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime, st1.edited_at AS updated FROM station st1 INNER JOIN (SELECT stationid, MAX(edited_at) AS updated, MAX(fromtime) AS fromtime FROM station WHERE (lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) AS st2 ON (st1.stationid = st2.stationid AND st1.edited_at = st2.updated AND st1.fromtime = st2.fromtime) WHERE (st1.lon IS NOT NULL AND st1.lat IS NOT NULL);
+
 #endif /*ADDPLACEPOINT_H_*/

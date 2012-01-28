@@ -58,9 +58,9 @@ namespace wdb { namespace load {
      */
     class WciBegin : public pqxx::transactor<>
     {
+
     public:
-        WciBegin(const std::string & wciUser)
-            : pqxx::transactor<>("WciBegin"), wciUser_(wciUser)
+        WciBegin(const std::string & wciUser) : pqxx::transactor<>("WciBegin"), wciUser_(wciUser)
         {
             // NOOP
         }
@@ -84,7 +84,7 @@ namespace wdb { namespace load {
             query << ')';
             pqxx::result R = T.exec(query.str());
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
-            log.infoStream() << query.str();
+//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<query.str()<<std::endl;
         }
 
         /**
@@ -94,6 +94,7 @@ namespace wdb { namespace load {
         {
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
             log.infoStream() << "wci.begin call complete";
+//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"wci.begin call complete"<<std::endl;
         }
 
         /**
@@ -104,6 +105,7 @@ namespace wdb { namespace load {
         {
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
             log.errorStream() << "Transaction " << Name() << " failed " << Reason;
+//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"Transaction " << Name() << " failed " << Reason<<std::endl;
         }
 
         /**
@@ -114,6 +116,7 @@ namespace wdb { namespace load {
         {
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
             log.errorStream() << "Transaction " << Name() << " in indeterminate state";
+//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"Transaction " << Name() << " in indeterminate state"<<std::endl;
         }
 
     private:

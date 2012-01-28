@@ -60,6 +60,7 @@ namespace wdb { namespace load {
          * @param 	placeName	placeName of the new/existing point
          * @param 	geometry	place geometry as WKT
          */
+
         UpdatePlacePoint(const std::string& placename, const std::string& geometry, const std::string& validfrom, const std::string& validto = "infinity")
             : AddPlacePoint(placename, geometry, validfrom, validto, "UpdatePlacePoint")
         {
