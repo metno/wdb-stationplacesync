@@ -23,3 +23,4 @@ src/WDBDatabaseConnection.o
 src/main.o
 stamp-h1
 wdbstationsloader
+stationLoad
