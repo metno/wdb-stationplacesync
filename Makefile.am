@@ -47,3 +47,5 @@ stationLoad_LDADD = $(wdb_LIBS) -lwdbLoad -lwdbConfig -lwdbProj -lwdbExcept -lwd
 CLEANFILES =
 EXTRA_DIST =
 include src/sources.mk
+
+include config/mk/debian.mk

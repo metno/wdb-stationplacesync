@@ -1,0 +1,14 @@
+Source: stationload
+Section: science
+Priority: extra
+Maintainer: Norwegian Meteorological Institute met.no <wdb@met.no>
+Build-Depends: debhelper (>= 5), autotools-dev
+Build-Conflicts: autoconf2.13, automake1.4
+Standards-Version: 3.7.2
+
+Package: stationload
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Meteorological weather station loader
+ This program loads weather station info into WDB database.
+ The data is extracted from STINFOSYS databse.
