@@ -81,6 +81,7 @@ public:
             std::string stuser; /// < station database user.
             std::string stpass; /// < station database password.
             int         stport; /// < station database port.
+            std::string stupdated; /// look at stations that have been updated (edited_at) after given date
 
             /// what namespaces to use
             std::string stationidNameSpace; /// uses stationid(from STINFOSYS) as placename into wdb
