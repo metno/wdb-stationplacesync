@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 AC_PREREQ(2.59)
-AC_INIT(stationLoad, 1.0.0, [wdb@lists.met.no])
+AC_INIT(stationLoad, 1.0.0, [wdb@met.no])
 # Config
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
@@ -63,6 +63,9 @@ AC_CXX_REQUIRE_STL
 
 # WDB
 #WDB_CHECK
+
+# WDBLOAD
+WDB_LIBWDBLOAD_CHECK
 
 # GEOS
 WDB_GEOS_C
