@@ -64,8 +64,8 @@ install: build
 	dh_testroot
 	dh_clean -k 
 	dh_installdirs
-	# Add here commands to install the package into debian/stationload
-	$(MAKE) DESTDIR=$(CURDIR)/debian/stationload install
+	# Add here commands to install the package into debian/wdb-stationload
+	$(MAKE) DESTDIR=$(CURDIR)/debian/wdb-stationload install
 
 
 # Build architecture-independent files here.
@@ -86,7 +86,7 @@ binary-arch: build install
 	dh_fixperms
 	dh_installdeb
 	dh_makeshlibs	
-	dh_shlibdeps
+	dh_shlibdeps -v
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

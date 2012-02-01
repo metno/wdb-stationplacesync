@@ -61,6 +61,9 @@ AC_CXX_REQUIRE_STL
 # Module Checks
 #-----------------------------------------------------------------------------
 
+# WDB
+#WDB_CHECK
+
 # GEOS
 WDB_GEOS_C
 
