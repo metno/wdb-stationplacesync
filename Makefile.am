@@ -50,3 +50,5 @@ EXTRA_DIST =
 include src/sources.mk
 
 include config/mk/debian.mk
+
+include doc/doc.mk
