@@ -1,6 +1,5 @@
-wdb-stationload (1.0.0-ubuntu1) stable; urgency=low
+wdb-stationload (1.0.0-ubuntu1) experimental lucid; urgency=low
 
-  * Initial release
-  * wdb-stationload_1.0.0-ubuntu1_i386.deb
+  * Initial build
 
- -- Aleksandar Babic <aleksandarb@met.no>  Tue, 31 Jan 2012 10:30:36 +0100
+ -- Aleksandar Babic <aleksandarb@met.no>  Fri, 02 Sep 2011 10:00:00 +0100

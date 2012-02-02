@@ -1,14 +1,15 @@
 Source: wdb-stationload
 Section: science
-Priority: extra
-Maintainer: Aleksandar Babic <wdb@met.no>
-Build-Depends: debhelper (>= 5), autotools-dev, libwdbload1
+Priority: optional
+Maintainer: Norwegian Meteorological Institute <aleksandarb@met.no>
+Build-Depends: debhelper (>=7.0.50~), autotools-dev
 Build-Conflicts: autoconf2.13, automake1.4
-Standards-Version: 3.9.1
+Standards-Version: 3.7.2
+Homepage: http://www.met.no
 
 Package: wdb-stationload
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libwdbload1
-Description: Meteorological weather station loader
- This program loads weather station info into WDB database.
- The data is extracted from STINFOSYS databse.
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: fimex-bin (>= 0.30)
+Description: STANAG 6021 (METGM) c api library
+ This library is used by fimex utility/library
