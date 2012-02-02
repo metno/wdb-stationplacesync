@@ -32,3 +32,7 @@ stationload_1.0.0-ubuntu1.orig.tar.gz
 stationload_1.0.0-ubuntu1.tar.gz
 stationload_1.0.0-ubuntu1_i386.changes
 stationload_1.0.0-ubuntu1_i386.deb
+doc/developer/stationload_system-design-specification.html
+doc/developer/stationload_system-test-specification.html
+doc/man/stationLoad.1
+
