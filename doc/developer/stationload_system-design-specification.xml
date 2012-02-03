@@ -291,37 +291,17 @@
 		</sect2>
 		
 		<sect2>
-			<title>GribField</title>
+			<title>STIStationRecord</title>
 			
-			<para>The GribField class encapsulates a single forecast field. It is
-				instantiated using a pointer to the file, and employs the grib_api to unpack
-				the field values and the keys.</para>
-			
-			<para>The GribField class contains two main methods:</para>
-			
-			<sect3>
-				<title>initializeData</title>
-				
-				<para>The initializeData method handles any preprocessing that may be
-					required of the value data itself, prior to it being stored in the
-					database. In WDB, this is related to the ``scanning mode'' of the field;
-					WDB assumes that fields are stored with scanning mode 64 (i.e., the
-					first point of the array is the lower left corner of the field, and the
-					last point of the array is the upper right corner). If the field is not in
-					scanning mode 64, it is re-mapped such that it is.</para>
-				
-			</sect3>
-			
-			<sect3>
-				<title>storeInDatabase</title>
-				
-				<para>The storeInDatabase method stores the value-group keys of the
-					forecast field in the wdb_floatgridvalue table.</para>
-				
-			</sect3>
-			
+			<para>The STIStationRecord class encapsulates a single STINFOSYS record as defined in station table.</para>			
 		</sect2>
 		
+		<sect2>
+			<title>WDBStationRecord</title>
+
+			<para>The WDBStationRecord class encapsulates a single WDB palce point record.</para>
+		</sect2>
+
 		<sect2>
 			<title>GribGridDefinition</title>
 			
