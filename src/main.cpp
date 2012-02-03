@@ -87,7 +87,13 @@ int main(int argc, char ** argv)
 //    std::string wdbConnectionString = "host=proffdb-test dbname=wdb user=proffread";
 //    std::string stinfosysConnectionString = "host=stinfosys dbname=stinfosys user=pstinfosys port=5435 password=info12";
 
+
     STLoaderConfiguration config;
+
+    wdb::WdbLogHandler logHandler(config.logging().loglevel, config.logging().logfile );
+    WDB_LOG & log = WDB_LOG::getInstance( "wdb.stationload.main" );
+    log.debugStream() << "Starting stationLoad" ;
+
     try {
         config.parse(argc, argv);
         if(config.general().help) {
@@ -124,5 +130,7 @@ int main(int argc, char ** argv)
         clog << e.what() << endl;
         return 1;
     }
+
+    log.debugStream() << "Stopping stationLoad";
 }
 

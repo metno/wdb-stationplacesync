@@ -26,8 +26,7 @@ bin_PROGRAMS = stationLoad
 # This is to be replaced by a "find wdb" macro:
 AM_CXXFLAGS = -DSYSCONFDIR=\"$(pkgsysconfdir)\" $(wdb_CFLAGS)
         
-stationLoad_LDADD = $(wdb_LIBS) -lwdbLoad -lwdbMath
-# -lwdbConfig -lwdbProj -lwdbExcept -lwdbLog -lwdbMath
+stationLoad_LDADD = $(wdb_LIBS) -lwdbLoad -lwdbMath -lwdbExcept -lwdbLog -lwdbMath
 
 CLEANFILES =
 EXTRA_DIST =
