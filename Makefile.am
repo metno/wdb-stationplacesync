@@ -51,4 +51,5 @@ include src/sources.mk
 
 include config/mk/debian.mk
 
+include etc/etc.mk
 include doc/doc.mk
