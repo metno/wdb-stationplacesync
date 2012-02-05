@@ -60,8 +60,8 @@ namespace wdb { namespace load {
         /**
          * Default Constructor
          */
-        GetAllSTIStations(std::map<std::string, STIStationRecord>& out, const std::string& edited_at = std::string())
-            : pqxx::transactor<>("GetAllSTIStations"), out_(out), edited_at_(edited_at)
+        GetAllSTIStations(std::map<std::string, STIStationRecord>& out, const std::string& edited_after = std::string(), const std::string& edited_before = std::string(), const std::string& limit = std::string())
+            : pqxx::transactor<>("GetAllSTIStations"), out_(out), edited_after_(edited_after), edited_before_(edited_before), limit_(limit)
         {
             // NOOP
         }
@@ -75,8 +75,16 @@ namespace wdb { namespace load {
                     " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 "
                     " INNER JOIN (SELECT stationid, MAX(edited_at) AS last_updated, MAX(fromtime) AS fromtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) st2 "
                     " ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL ";
-            if(!edited_at_.empty())
-                query.append(" AND st1.edited_at >= ").append("'").append(edited_at_).append("'");
+
+            if(!edited_after_.empty())
+                query.append(" AND st1.edited_at >= ").append("'").append(edited_after_).append("'");
+
+            if(!edited_before_.empty())
+                query.append(" AND st1.edited_at <= ").append("'").append(edited_before_).append("'");
+
+            if(!limit_.empty())
+                query.append(" LIMIT ").append("'").append(limit_).append("'");
+
             R_ = T.exec(query);
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             std::cerr << query << std::endl;
@@ -141,7 +149,9 @@ namespace wdb { namespace load {
         ///
         std::map<std::string, STIStationRecord>& out_;
         ///
-        std::string edited_at_;
+        std::string edited_after_;
+        std::string edited_before_;
+        std::string limit_;
     };
 
 } } /* end namespaces */

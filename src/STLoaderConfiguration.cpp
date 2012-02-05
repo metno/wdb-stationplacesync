@@ -96,7 +96,9 @@ getLoading( STLoaderConfiguration::STLoadingOptions & out, const std::string & d
 //        // TODO Fix magic number
 //        // KLUDGE Magic number - should not be used
         ( "stport", value( & out.stport )->default_value( 5432 ), "Specify stations database port (default 5432)" )
-        ( "after", value( & out.stupdated ), "Specify date of last update for stations (=> arg)" )
+        ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
+        ( "before", value( & out.stupdatedbefore ), "Specify date of last update for stations (=< before)" )
+        ( "limit", value( & out.stlimit ), "Specify the limit on stations to be updated (=< limit)" )
 //        ( "confidencecode", value( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
 //        ( "namespace", value(& out.nameSpace), "Specify a non-default namespace. Currently supported are 'default' and 'test'")
     ;
