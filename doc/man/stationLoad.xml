@@ -16,8 +16,8 @@
 	
 	<refnamediv>
 		<refname>stationLoad</refname>
-		<refpurpose>Load weather stations locations into the WDB database. It is a part of the WDB
-			    system.
+                <refpurpose>Load weather stations location (and other meta-data) into the WDB database.
+                            It is a part of the WDB system.
                 </refpurpose>
 	</refnamediv>
 	
@@ -31,16 +31,17 @@
 	<refsect1>
 		<title>Description</title>
 		
-		<para>stationLoad loads the location(s) of the weather station(s) into the wdb database. The
-		      database must be up and running for this program to work, unless one of the options
-		      --help or --list have been given on the command line.
+                <para>stationLoad loads meta-data of the weather station(s) into the wdb database.
+                      The WDB database must be up and running for this program to work, unless one of the options:
+                      --help or --list have been given on the command line.
                 </para>
 		
 		<para>The STINFOSYS (http://stinfosys) is considered as the authoritative source for weather stations
                       at the met.no. STINFOSYS holds, among other things, information about stations position, their WMO number,
-                      internal ID, place name, validity dates and so on. Only internal ID is unique. Place names and WMO numbers
-                      are not. The internal ID as placename in WDB within default placenamspaceid. The WMO number is used as
-                      value for placename in WDB within 4356 placenamespaceid.
+                      internal ID, place name, validity dates and so on.
+                      Only internal ID is unique. WMO (synop) number is not defined for each station. Place names are not unique.
+                      The internal IDs are used as placename within default placenamespaceid.
+                      The WMO numbers are used as value for placename within 4356 placenamespaceid.
                 </para>
 		
 	</refsect1>
@@ -80,23 +81,37 @@
 			</varlistentry>
 			
 			<varlistentry>
-				<term>-l</term>
-				<term>--list</term>
+                                <term>--dry-run</term>
 				<listitem>
-					<para>This lists the SQL commands that would be sent, instead of executing them
-					      against WDB.
+                                        <para>
+                                              Dumps the list of SQL commands that would be sent to WDB.
+                                              No execution takes place. Useful for debugging.
                                         </para>
 				</listitem>
 			</varlistentry>
 			
-			
-			<varlistentry>
+                        <varlistentry>
+                                <term>--limit</term>
+                                <listitem>
+                                        <para>
+                                              Upper bound on the number of stations that will be inserted/updated.
+                                        </para>
+                                </listitem>
+                        </varlistentry>
+
+                        <varlistentry>
 				<term>--after</term>
 				<listitem>
-					<para>Specify the date of last update for stations you want to load.</para>
+                                        <para>Lower bound on the update date for stations.</para>
 				</listitem>
 			</varlistentry>
 			
+                        <varlistentry>
+                                <term>--buffer</term>
+                                <listitem>
+                                        <para>Upper bound on the update date for stations.</para>
+                                </listitem>
+                        </varlistentry>
 			
 			<varlistentry>
 				<term>-d DBNAME</term>
@@ -170,6 +185,14 @@
 		<para>stationLoad returns 0 to the shell if it finished normally and 1 if a fatal error
 		      occured during loading (out of memory, files not found, database not found,
 		      etc.).
+                </para>
+
+                <para>
+                      IMPORTANT:
+                          It has been noticed that STINFOSYS contains stations with different IDs
+                          but with same lon/lat. The WDB currently can't support such situation
+                          and will throw exception. The stationLoad tool will catch the exception,
+                          print out the message and continue to load other stations.
                 </para>
 		
 	</refsect1>
