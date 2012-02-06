@@ -68,7 +68,7 @@ options_description getOutput(STLoaderConfiguration::OutputOptions & out)
 {
     options_description output( "Output" );
     output.add_options()
-       ( "list,l", bool_switch( & out.list ), "List content of file instead of inserting into database" )
+       ( "dry-run", bool_switch( & out.dry_run ), "Just show the SQL commands that would be sent to WDB database" )
     ;
 
     return output;

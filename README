@@ -31,7 +31,7 @@ When building debian packages it is importan to have proper setup.
 This mean that all wdb dependenciea are in place. If wdb has been
 installed then include and library paths will point to it.
 However if that is not the case use environment varibales to set up:
-export LIBRARY_PATH <some_local_path>/lib
+export LIBRARY_PATH=<some_local_path>/lib
 export C_INCLUDE_PATH=<some_local_path>/include/
 export CPLUS_INCLUDE_PATH=<some_local_path>/include/
 export LD_LIBRARY_PATH=<some_local_path>/lib

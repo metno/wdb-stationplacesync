@@ -119,7 +119,7 @@ int main(int argc, char ** argv)
         STInfosysDatabaseConnection stinfosys(config);
         stinfosys.getAllStations(sti_stations);
 
-        std::cerr << __FUNCTION__ << " # sti_stations : "<< sti_stations.size() << std::endl;
+//        std::cerr << __FUNCTION__ << " # sti_stations : "<< sti_stations.size() << std::endl;
 
         wdb.updateStations(sti_stations);
     } catch (pqxx::sql_error & e) {

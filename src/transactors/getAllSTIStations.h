@@ -86,9 +86,9 @@ namespace wdb { namespace load {
                 query.append(" LIMIT ").append("'").append(limit_).append("'");
 
             R_ = T.exec(query);
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
-            std::cerr << query << std::endl;
-            std::cerr << " R size: " << R_.size()<< std::endl;
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
+//            std::cerr << query << std::endl;
+//            std::cerr << " R size: " << R_.size()<< std::endl;
         }
 
         /**
@@ -96,7 +96,6 @@ namespace wdb { namespace load {
          */
         void on_commit()
         {
-            std::cerr<<__FUNCTION__<<" # stations: " << R_.size()<< std::endl;
             out_.clear();
             size_t rCount = R_.size();
             for(size_t r = 0; r < rCount; ++r) {
@@ -127,7 +126,7 @@ namespace wdb { namespace load {
          */
         void on_abort(const char Reason[]) throw ()
         {
-            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
+//            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             log.errorStream() << "Transaction " << Name() << " failed " << Reason;
         }
@@ -138,7 +137,7 @@ namespace wdb { namespace load {
          */
         void on_doubt() throw ()
         {
-            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
+//            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             log.errorStream() << "Transaction " << Name() << " in indeterminate state";
         }

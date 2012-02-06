@@ -69,7 +69,7 @@ public:
          */
         struct OutputOptions
         {
-                bool list;
+                bool dry_run;
         };
         /** Container for general loader options
          */

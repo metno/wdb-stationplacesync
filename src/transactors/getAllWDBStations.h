@@ -80,8 +80,8 @@ namespace wdb { namespace load {
                     " ON (tb1.placeid = tb2.placeid);";
 
             R_ = T.exec(query);
-            std::cerr << query << std::endl;
-            std::cerr << " R size: " << R_.size()<< std::endl;
+//            std::cerr << query << std::endl;
+//            std::cerr << " R size: " << R_.size()<< std::endl;
         }
 
         /**
@@ -119,7 +119,7 @@ namespace wdb { namespace load {
          */
         void on_abort(const char Reason[]) throw ()
         {
-            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
+//            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             log.errorStream() << "Transaction " << Name() << " failed " << Reason;
         }
@@ -130,7 +130,7 @@ namespace wdb { namespace load {
          */
         void on_doubt() throw ()
         {
-            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
+//            std::cerr<<__FUNCTION__<<" R size: " << R_.size()<< std::endl;
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             log.errorStream() << "Transaction " << Name() << " in indeterminate state";
         }
