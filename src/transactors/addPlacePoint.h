@@ -78,8 +78,8 @@ namespace wdb { namespace load {
         void operator()(argument_type &T)
         {
             R = T.exec(query_);
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-            std::cerr << query_ << std::endl;
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
+//            std::cerr << query_ << std::endl;
         }
 
         /**
@@ -87,8 +87,8 @@ namespace wdb { namespace load {
           */
         void on_commit()
         {
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-            log.infoStream() << "wci.addplacepoint call complete";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
+//            log.infoStream() << "wci.addplacepoint call complete";
         }
 
         /**

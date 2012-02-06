@@ -75,8 +75,8 @@ namespace wdb { namespace load {
             std::ostringstream query;
             query << "SELECT * wci.getPlaceName"<<"("<<"\'"<< placeName_ <<"\'"<< "," <<  "\'"<< validtime_<<"\'"<< " )";
             R = T.exec(query.str());
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getplacename");
-            log.infoStream() << query.str();
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getplacename");
+//            log.infoStream() << query.str();
         }
 
         /**
@@ -84,8 +84,8 @@ namespace wdb { namespace load {
          */
         void on_commit()
         {
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getplacename");
-            log.infoStream() << "wdb.load.getplacename call complete";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getplacename");
+//            log.infoStream() << "wdb.load.getplacename call complete";
         }
 
         /**

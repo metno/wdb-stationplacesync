@@ -30,9 +30,9 @@
 #ifndef GETALLSTISTATIONS_H_
 #define GETALLSTISTATIONS_H_
 
-#include "../WDBDatabaseConnection.h"
+#include "../DBStructs.h"
 #include "../STLoaderConfiguration.h"
-#include "../STInfosysDatabaseConnection.h"
+
 // WDB
 //
 #include <wdbException.h>
@@ -116,8 +116,8 @@ namespace wdb { namespace load {
 
                 out_.insert(std::make_pair<std::string, STIStationRecord>(rec.id_, rec));
             }
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
-            log.infoStream() << "wdb.load.getallstistations";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
+//            log.infoStream() << "wdb.load.getallstistations";
         }
 
         /**

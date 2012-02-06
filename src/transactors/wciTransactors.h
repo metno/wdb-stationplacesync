@@ -78,12 +78,13 @@ namespace wdb { namespace load {
         {
             std::ostringstream query;
             query << "SELECT wci.begin('" << wciUser_ << "'";
+
             if ( nameSpace_ )
                 query << ", " << nameSpace_->dataprovider << ", " << nameSpace_->place << ", " << nameSpace_->parameter;
 
             query << ')';
             pqxx::result R = T.exec(query.str());
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
 //            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<query.str()<<std::endl;
         }
 
@@ -92,8 +93,8 @@ namespace wdb { namespace load {
          */
         void on_commit()
         {
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
-            log.infoStream() << "wci.begin call complete";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
+//            log.infoStream() << "wci.begin call complete";
 //            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"wci.begin call complete"<<std::endl;
         }
 
@@ -163,8 +164,8 @@ namespace wdb { namespace load {
           */
         void on_commit()
         {
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wciend");
-            log.infoStream() << "wci.end call complete";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wciend");
+//            log.infoStream() << "wci.end call complete";
         }
 
         /**
