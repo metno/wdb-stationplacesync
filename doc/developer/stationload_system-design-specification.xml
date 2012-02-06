@@ -78,9 +78,6 @@
 					<para>Log4Cpp version 1.0</para>
 				</listitem>
 				<listitem>
-					<para>PROJ version 4.4.9</para>
-				</listitem>
-				<listitem>
 					<para>GEOS version 3.0.0</para>
 				</listitem>
 			</itemizedlist>
@@ -97,39 +94,37 @@
 		<sect2>
 			<title>Components</title>
 			
-			<para>The GribLoad system consists of three logical components. Each of these
-				components handle one of the key sequences of the task. The main GribLoad
-				program generally takes as an in-argument to the program the filename of the
-				file to be loaded into WDB. The file is then passed on to the three GribLoad
-				components in turn.</para>
+                        <para>The StationLoad system consists of three logical components. Each of these
+                                components handle one of the key sequences of the task. The main StationLoad
+                                program generally takes as an in-arguments to the program the connection
+                                parameters to the STINFOSYS database where stations meta-data are hosted.
+                                The STInfosysDatabseConnection will query all station records and forward
+                                them to the WDBDatabaseConnection object. Then the WDBDatabaseConnection
+                                object will check for new and station that should be updated.
+                                </para>
 			
 			<sect3>
-				<title>Unpacking Fields</title>
+                                <title>Database object initialization</title>
 				
-				<para>The initial component of the GribLoad system is used to unpack the
-					fields. Unpacking of prognosis fields is implemented using a standard
-					library developed and maintained by ECMWF, referred to as the
-					grib_api.</para>
+                                <para>The main app will initialize connections towards STINFOSYS and WDB.</para>
 				
 			</sect3>
 			
 			<sect3>
-				<title>Decoding and Indexing Fields</title>
+                                <title>Getting the stations from STINFOSYS</title>
 				
-				<para>The class GribField converts field data into a format that conforms
-					with the data structures of WDB. The class bridges the GRIB formats and
-					the Database Model; it takes as an input in its constructor the unpacked
-					GRIB arrays, and returns through its methods the metadata for the field
-					in the WDB. The class handles all table look-ups in the database
-					required to handle such conversions.</para>
+                                <para>STInfosysDatabseConnection extracts records and fills container.
+                                      From cmd line we can limit this result based on the last update
+                                      date.</para>
 				
 			</sect3>
 			
 			<sect3>
-				<title>Storing Fields in the Database</title>
+                                <title>Updating stations in WDB</title>
 				
-				<para>The storeInDatabase method of the GribField class takes the
-					contents of a field and store it in the WDB database.</para>
+                                <para>The updateStations method of the WDBDatabaseConnection class takes the
+                                        container with STINFOSYS data, compares it with the WDB state and then
+                                        inserts new or updates existing records.</para>
 				
 			</sect3>
 			
@@ -174,27 +169,28 @@
                               is executed by writing the program name followed by the
 			      station source parameters, as follows:</para>
 			
-			<para>wdb% bin/stationLoad hirlam10.grib</para>
+                        <para>wdb% bin/stationLoad --conf /etc/stationLoad.cfg</para>
 			
-			<para>In addition to the base functionality, the GribLoad system offers a
+                        <para>In addition to the base functionality, the StationLoad system offers a
 				number of additional options.</para>
 			
 			<itemizedlist>
 				<listitem>
-					<para>--list</para>
-					<para>This option lists the contents of the chosen GRIB file using
-						GRIBEX's debug printout functionality, without storing the data
-						in the database.</para>
+                                        <para>--dry-run</para>
+                                        <para>This option lists the SQL statements that would otherwise be executed.</para>
 				</listitem>
 				<listitem>
-					<para>--loadPlaceDefinition</para>
-					<para>A Grib field can only be loaded in the database if there exists an
-						appropriate place definition for that field in the wdb. Setting
-						-loadPlaceDefinition ensures that the field is always loaded; if
-						the place definition is missing, the GribLoad system
-						automatically generates an appropriate place definition for the
-						file in the database.</para>
+                                        <para>--limit</para>
+                                        <para>Upper bound on how many stations ca be inserted/updated</para>
 				</listitem>
+                                <listitem>
+                                        <para>--after</para>
+                                        <para>Lower bound on edited_at value from STINFOSYS.station</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--before</para>
+                                        <para>Upper bound on edited_at value from STINFOSYS.station</para>
+                                </listitem>
 			</itemizedlist>
 			
 		</sect2>
@@ -209,13 +205,7 @@
 		<sect2>
 			<title>Database Design</title>
 			
-			<para>The data from the forecast fields are stored in the table:</para>
-			
-			<itemizedlist>
-				<listitem>
-					<para>wdb.oidvalue</para>
-				</listitem>
-			</itemizedlist>
+                        <para>The data from the forecast fields are stored in the place related tables</para>
 			
 		</sect2>
 		
@@ -256,32 +246,17 @@
 					<para>Connect to the STINFOSYS database</para>
 				</listitem>
 				<listitem>
-					<para>Read all records updated after given date (see --parameter)</para>
+                                        <para>Read all STI stations records</para>
 				</listitem>
 				<listitem>
-					<para>Read all records updated after given date (see --parameter)</para>
+                                        <para>Forward these record to WDBDatabaseConnection object</para>
 				</listitem>
+                                <listitem>
+                                        <para>call updateStations</para>
+                                </listitem>
+
 				<listitem>
-					<para>For each station record
-						<itemizedlist>
-							<listitem>
-								<para>Create a GribField object from the forecast
-									field</para>
-							</listitem>
-							<listitem>
-								<para>Store the prognosis field in the database</para>
-							</listitem>
-							<listitem>
-								<para>Destroy the object</para>
-							</listitem>
-							<listitem>
-								<para>Read the next field from the file using
-									grib_api</para>
-							</listitem>
-						</itemizedlist> </para>
-				</listitem>
-				<listitem>
-					<para>Close the file</para>
+                                        <para>Close database connections</para>
 				</listitem>
 				<listitem>
 					<para>Terminate the program</para>
@@ -293,7 +268,8 @@
 		<sect2>
 			<title>STIStationRecord</title>
 			
-			<para>The STIStationRecord class encapsulates a single STINFOSYS record as defined in station table.</para>			
+                        <para>The STIStationRecord class encapsulates a single STINFOSYS record as defined in station table.
+                              It inherits pqxx::connection class.</para>
 		</sect2>
 		
 		<sect2>
@@ -303,167 +279,67 @@
 		</sect2>
 
 		<sect2>
-			<title>GribGridDefinition</title>
+                        <title>STInfosysDatabaseConnection</title>
 			
-			<para>The GribGridDefinition class encapsulates the grid description of the
-				the GRIB forecast field. It contains functions to generate a wdb place
-				definition from the data in the field. The section below discusses the most
-				important functions.</para>
+                        <para>The STInfosysDatabase class encapsulates the STINFOSYS databse. Useful function:</para>
 			
 			<sect3>
-				<title>getPlaceId</title>
+                                <title>getAllStations</title>
 				
-				<para>The getPlaceId method is the core method of the class. The place
-					definition of the field is compared with those in the database. If an
-					identical place definition is found, the placeId of that place
-					definition is retrieved and returned by the function. If the grid
-					definition does not exist, then an error is returned - unless the
-					loadPlaceDefinition option was set when the GribLoad system was
-					started. In the latter case, it inserts a new grid definition, and then
-					returns the placeId of the newly inserted place definition.</para>
-				
-			</sect3>
-			
-			<sect3>
-				<title>getScanMode</title>
-				
-				<para>Returns the scan mode of the field.</para>
-			</sect3>
-			
-			<sect3>
-				<title>setScanMode</title>
-				
-				<para>Sets the scan mode of the field.</para>
-			</sect3>
-			
-			<sect3>
-				<title>createRegularLatLonGrid</title>
-				
-				<para>This method is called when the object is instantiated with a regular
-					equidistant cylindrical grid. It generates the metadata for the place
-					definition of the field.</para>
-			</sect3>
-			
-			<sect3>
-				<title>createRotatedLatLonGrid</title>
-				
-				<para>This method is called when the object is instantiated with a rotated
-					equidistant cylindrical grid. It generates the metadata for the place
-					definition of the field. Using the grid definition from the KSec2, the
-					method calculates the grid points of each of the corners of the grid
-					polygon in the rotated projection. It then uses PROJ.4 to transform
-					those coordinates and retrieve the actual longitude and latitude for
-					those grid points in WGS84.</para>
+                                <para>Extracts stations from the station table. Takes out all stations that are still in operation and that have the newest edited_at value</para>
 				
 			</sect3>
 			
 		</sect2>
 		
 		<sect2>
-			<title>GribDatabaseConnection</title>
+                        <title>WDBDatabaseConnection</title>
 			
-			<para>The GribDatabaseConnection class encapsulates the embedded SQL of the
-				GribLoad implementation. It inherits the connection class from libpqxx,
-				and contains function calls for all the database access that occurs in
-				GribLoad. Isolating the database calls in the GribDatabaseConnection
-				permits the GribLoad system to be easily converted to a different database
-				system with alternative database access APIs.</para>
+                        <para>The WDBDatabaseConnection class inherits pqxx::conection.
+                                Contains function calls for all the WDB database access.</para>
 			
 			<para>To maximize performance during loading, most SQL statements and cursors
 				are prepared and declared only once. The database must be indexed such that
 				all searches made occur using indexed search.</para>
 			
-			<para>The various transactors are utilized through the
-				GribDatabaseConnection class to retrieve data from the database.</para>
+                        <para>updateStations is the most important function. here we will loop through all
+                              the records from STINFOSYS and see if new station should be inserted. If some
+                              station already exists we will check if lon/lat or times have been changed.
+                              If so, we have to update it.</para>
 			
+                        <para>IMPORTANT-. WDB is using two placenamespaceids - default and 4365.
+                              In default we are using station.stationid as placename value.
+                              In 4365 we are using station.wmono as placename value.</para>
+
 			<sect3>
-				<title>ReadDataProvider</title>
-				
-				<para>DataProvider is derived from the gribLoad.dataproviderxref view,
-					using the loadmode to determine dataprovidercodespaceid,
-					generating center and generating process to identify a DataProvider
-					Id.</para>
-				
+                                <title>GetAllStations</title>
+
+                                <para></para>
+
 			</sect3>
 			
 			<sect3>
-				<title>ReadParameter</title>
+                                <title>AddPlacePoint</title>
+
+                                <para></para>
 				
-				<para>The parameter (representing the statistics type, the physical
-					phenomena and value domain of the forecast value) of the forecast field
-					is retrieved from the gribLoad.parameterxref view. Loadmode is used
-					to identify what valuedomaincodespaceid is operating under. The
-					generating center and codetable 2 version number identify which
-					reference lookup table is being used by the gribparameter; based on
-					these two codes, we can then use the gribparameter to identify what
-					parameter the forecast field has.</para>
+			</sect3>
+			
+                        <sect3>
+                                <title>UpdatePlacePoint</title>
 				
-				<para>The timerange code is used to identify the time range of the forecast;
-					e.g., is it an instant, average, or accumulated parameter.</para>
-				
-				<para>For probability forecasts, we may additionally have ``threshold''
-					parameters; probabilities of a given parameter exceeding or falling
-					below a given threshold. In these cases, the threshold will be passed
-					from the KSEC1 field (usually in a local usage section).</para>
-				
+                                <para></para>
+
 			</sect3>
 			
 			<sect3>
-				<title>ReadLevelParameter</title>
-				
-				<para>The levelparameter represents the physical phenomena and level
-					domain of the level) of the forecast field. This is identified using the
-					level parameter of the GRIB field and the loading mode (to identify the
-					level codespaceid) from the gribload.levelparameterxref view. The
-					leveldomaincodespaceid is identified by the loadMode of the GribLoad
-					system; together with the level indicator from the GRIB file (defined
-					in WMO Code Table 3) the level parameter (physical phenomenon and level
-					domain) can be identified.</para>
-				
-			</sect3>
-			
-			<sect3>
-				<title>ReadAdditionalLevel</title>
-				
-				<para>Additional level information from the GRIB parameter is decoded
-					using the gribload.parametertolevelxref view.</para>
-				
-			</sect3>
-			
-			<sect3>
-				<title>ReadPlaceDefinition</title>
-				
-				<para>This transactor is used when identifying the placeid of a GRIB field.
-					This is done by using the grid information and original srid to retrieve
-					the corresponding place definition from the gribload.placexref
-					view.</para>
-				
-			</sect3>
-			
-			<sect3>
-				<title>WritePlaceDefinition</title>
-				
-				<para>This transactor is used to write a new place definition into the
-					database. It inserts data into the wdb.placedefinition and
-					wdb.regulargrid tables.</para>
-				
-			</sect3>
-			
-			<sect3>
-				<title>ReadSrid</title>
-				
-				<para>This transactor is used to identify the srid of the projections in a
-					GRIB file. The srid is retrieved from the gribload.sridxref
-					view.</para>
-			</sect3>
-			
-			<sect3>
-				<title>WriteValue</title>
-				
-				<para>This transactor is used to write the values and keys of the GRIB field
-					itself into the wdb.floatgridvalue table.</para>
-			</sect3>
-			
+                                <title>getPlaceName</title>
+
+                                <para></para>
+
+                        </sect3>
+
+
 		</sect2>
 		
 		<sect2>
