@@ -30,6 +30,8 @@
 #ifndef STLOADERCONFIGURATION_H_
 #define STLOADERCONFIGURATION_H_
 
+#include "DBStructs.h"
+
 // PROJECT INCLUDES
 #include <wdbConfiguration.h>
 

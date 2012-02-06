@@ -29,24 +29,14 @@
 #ifndef WDBDATABASECONNECTION_H_
 #define WDBDATABASECONNECTION_H_
 
-#include "STInfosysDatabaseConnection.h"
+
+#include "DBStructs.h"
 
 #include <pqxx/connection>
 #include <string>
 #include <limits>
 
 namespace wdb { namespace load {
-
-    struct WDBStationRecord
-    {
-        std::string id_;
-        std::string name_;
-        std::string srid_;
-        std::string wkt_;
-        std::string from_;
-        std::string to_;
-    };
-
 
     class WDBDatabaseConnection : public pqxx::connection
     {

@@ -37,16 +37,6 @@
 
 namespace wdb { namespace load {
 
-    struct STIStationRecord
-    {
-        std::string id_;
-        std::string name_;
-        float       lon_;
-        float       lat_;
-        std::string wmo_;
-        std::string from_;
-        std::string to_;
-    };
     class STInfosysDatabaseConnection : public pqxx::connection
     {
     public:
