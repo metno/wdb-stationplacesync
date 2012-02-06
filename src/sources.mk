@@ -1,4 +1,5 @@
 stationLoad_SOURCES = src/main.cpp \
+                      src/DBStructs.h \
                       src/STLoaderConfiguration.h \
 				      src/STLoaderConfiguration.cpp \
                       src/STInfosysDatabaseConnection.h \
