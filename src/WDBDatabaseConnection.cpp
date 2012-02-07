@@ -127,7 +127,7 @@ namespace wdb { namespace load {
 
     void WDBDatabaseConnection::updateStations(std::map<std::string, STIStationRecord>& sti_stations)
     {
-        WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wdbdatabaseconnection");
+//        WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wdbdatabaseconnection");
 
         std::map<std::string, WDBStationRecord> stations_by_id;
         std::map<std::string, WDBStationRecord> stations_by_wmono;
@@ -135,6 +135,7 @@ namespace wdb { namespace load {
 
         initGEOS(notice, notice);
 
+        if(config_->loading().load_stationid_)
         { /// update STATIONID namespace
 
             perform(WciBegin((config_->database().user)));
@@ -204,6 +205,7 @@ namespace wdb { namespace load {
 
         }
 
+        if(config_->loading().load_wmono_)
         { /// update WMONO namespace
 
             perform(WciBegin((config_->database().user), 0, 4365, 0));

@@ -84,7 +84,8 @@ getLoading( STLoaderConfiguration::STLoadingOptions & out, const std::string & d
     out.defaultDataProvider = defaultDataProvider;
     options_description loading("Loading");
     loading.add_options()
-//    ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition )->default_value( false ), "Load place definition" )
+    ( "load_wmono", bool_switch( & out.load_wmono_ )->default_value( false ), "Load into WMO namespace" )
+    ( "load_stationid", bool_switch( & out.load_stationid_ )->default_value( false ), "Load into STATIONID namespace" )
 //        ( "dataprovider", value( & out.dataProvider ), "Override WCI Data Provider Name decoded from file" )
         ( "stdatabase", value( & out.stdatabase ), "Specify stations database name" )
         ( "sthost", value( & out.sthost ), "Specify stations database host" )

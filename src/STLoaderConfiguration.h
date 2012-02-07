@@ -87,6 +87,9 @@ public:
             std::string stupdatedbefore; /// look at stations that have been updated (edited_at) before given date
             std::string stlimit; /// works like limit in SQL
 
+            bool load_wmono_;
+            bool load_stationid_;
+
             /// what namespaces to use
             std::string stationidNameSpace; /// uses stationid(from STINFOSYS) as placename into wdb
             std::string wmonoNameSpace; /// uses wmono(from STINFOSYS) as placename into wdb
