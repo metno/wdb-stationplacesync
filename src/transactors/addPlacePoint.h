@@ -67,9 +67,9 @@ namespace wdb { namespace load {
               placeName_(placename), geometry_(geometry),
               validfrom_(validfrom), validto_(validto)
         {
-            std::ostringstream query;
-            query << "SELECT wci.addOrUpdatePlacePoint"<<"("<<"\'"<< placeName_ <<"\'"<< "," << "ST_GeomFromText("<< "\'"<< geometry_<<"\'"<<", 4030 )" << "," << "\'" << validfrom_ << "\'" << "," << "\'" << validto_ << "\'" << ");";
-            query_ = query.str();
+//            std::ostringstream query;
+//            query << "SELECT wci.addOrUpdatePlacePoint"<<"("<<"\'"<< placeName_ <<"\'"<< "," << "ST_GeomFromText("<< "\'"<< geometry_<<"\'"<<", 4030 )" << "," << "\'" << validfrom_ << "\'" << "," << "\'" << validto_ << "\'" << ");";
+//            query_ = query.str();
         }
 
         /**
@@ -77,7 +77,12 @@ namespace wdb { namespace load {
           */
         void operator()(argument_type &T)
         {
-            R = T.exec(query_);
+            R = T.prepared("UpdatePlacePoint")
+                                             (placeName_)
+                                             (geometry_)
+                                             (validfrom_)
+                                             (validto_).exec();
+//            R = T.exec(query_);
 //            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
 //            std::cerr << query_ << std::endl;
         }
