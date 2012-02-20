@@ -1,3 +1,11 @@
+wdb-stationload (1.0.2-ubuntu1) experimental lucid; urgency=low
+
+  * corrected STINFOSYS SQL query
+  * using 123 as palcenamespaceid for stationid
+  * using 456 as placenamespaceid for wmono
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Fri, 02 Sep 2011 10:00:00 +0100
+
 wdb-stationload (1.0.0-ubuntu1) experimental lucid; urgency=low
 
   * Initial build
