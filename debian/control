@@ -10,6 +10,5 @@ Homepage: http://www.met.no
 Package: wdb-stationload
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: fimex-bin (>= 0.30)
-Description: STANAG 6021 (METGM) c api library
- This library is used by fimex utility/library
+Description: stationload is WDB utility
+ Reads STINFOSYS database and loading stations WDB.

@@ -1,3 +1,9 @@
+wdb-stationload (1.0.2-rc2-ubuntu1) experimental lucid; urgency=low
+
+  * corrected package description
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Mon, 20 Feb 2012 10:00:00 +0100
+
 wdb-stationload (1.0.2-ubuntu1) experimental lucid; urgency=low
 
   * corrected STINFOSYS SQL query
