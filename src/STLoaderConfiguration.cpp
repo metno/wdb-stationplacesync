@@ -84,24 +84,16 @@ getLoading( STLoaderConfiguration::STLoadingOptions & out, const std::string & d
     out.defaultDataProvider = defaultDataProvider;
     options_description loading("Loading");
     loading.add_options()
-    ( "load_wmono", bool_switch( & out.load_wmono_ )->default_value( false ), "Load into WMO namespace" )
-    ( "load_stationid", bool_switch( & out.load_stationid_ )->default_value( false ), "Load into STATIONID namespace" )
-//        ( "dataprovider", value( & out.dataProvider ), "Override WCI Data Provider Name decoded from file" )
+//    ( "load_wmono", bool_switch( & out.load_wmono_ )->default_value( false ), "Load into WMO namespace" )
+//    ( "load_stationid", bool_switch( & out.load_stationid_ )->default_value( false ), "Load into STATIONID namespace" )
         ( "stdatabase", value( & out.stdatabase ), "Specify stations database name" )
         ( "sthost", value( & out.sthost ), "Specify stations database host" )
         ( "stuser", value( & out.stuser ), "Specify stations database user" )
         ( "stpass", value( & out.stpass ), "Specify stations database password" )
-//        ( "referencetime", value( & out.referenceTime ), "Override reference time decoded from file" )
-//        ( "valueparameter", value( & out.valueParameter ), "Override value parameter decoded from file" )
-//        ( "levelparameter", value( & out.levelParameter ), "Override level parameter decoded from file" )
-//        // TODO Fix magic number
-//        // KLUDGE Magic number - should not be used
         ( "stport", value( & out.stport )->default_value( 5432 ), "Specify stations database port (default 5432)" )
         ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
         ( "before", value( & out.stupdatedbefore ), "Specify date of last update for stations (=< before)" )
         ( "limit", value( & out.stlimit ), "Specify the limit on stations to be updated (=< limit)" )
-//        ( "confidencecode", value( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
-//        ( "namespace", value(& out.nameSpace), "Specify a non-default namespace. Currently supported are 'default' and 'test'")
     ;
 
     return loading;
