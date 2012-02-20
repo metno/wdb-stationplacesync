@@ -102,8 +102,8 @@ namespace wdb { namespace load {
           */
         void on_abort(const char Reason[]) throw ()
         {
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-            log.errorStream() << "Transaction " << Name() << " failed " << Reason;
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
+//            log.errorStream() << "Transaction " << Name() << " failed " << Reason;
         }
 
         /**
@@ -112,8 +112,8 @@ namespace wdb { namespace load {
           */
         void on_doubt() throw ()
         {
-            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-            log.errorStream() << "Transaction " << Name() << " in indeterminate state";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
+//            log.errorStream() << "Transaction " << Name() << " in indeterminate state";
         }
 
         std::string toString() const

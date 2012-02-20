@@ -73,8 +73,12 @@ namespace wdb { namespace load {
         {
             std::string query =
                     " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 "
-                    " INNER JOIN (SELECT stationid, MAX(edited_at) AS last_updated, MAX(fromtime) AS fromtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) st2 "
-                    " ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
+                    " JOIN (SELECT stationid, MAX(fromtime) AS maxtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) group by stationid) st2 "
+                    " ON (st1.stationid = st2.stationid AND st1.fromtime >= st2.maxtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
+
+//                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 "
+//                    " INNER JOIN (SELECT stationid, MAX(edited_at) AS last_updated, MAX(fromtime) AS fromtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) st2 "
+//                    " ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
                     ;
 
             if(!edited_after_.empty())
@@ -83,10 +87,12 @@ namespace wdb { namespace load {
             if(!edited_before_.empty())
                 query.append(" AND st1.edited_at <= ").append("'").append(edited_before_).append("'");
 
+            query.append(" ORDER BY st1.edited_at DESC ");
+
             if(!limit_.empty())
                 query.append(" LIMIT ").append("'").append(limit_).append("'");
 
-            query.append(" ORDER BY st1.edited_at DESC ");
+
 
             R_ = T.exec(query);
 //            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
@@ -158,5 +164,5 @@ namespace wdb { namespace load {
 
 } } /* end namespaces */
 
-
+//SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1  JOIN (SELECT stationid, MAX(fromtime) AS maxtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) group by stationid) st2 ON (st1.stationid = st2.stationid AND st1.fromtime >= st2.maxtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL;
 #endif /*GETALLSTISTATIONS_H_*/
