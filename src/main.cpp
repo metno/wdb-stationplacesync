@@ -84,15 +84,11 @@ void help( const boost::program_options::options_description & options, ostream 
 
 int main(int argc, char ** argv)
 {
-//    std::string wdbConnectionString = "host=proffdb-test dbname=wdb user=proffread";
-//    std::string stinfosysConnectionString = "host=stinfosys dbname=stinfosys user=pstinfosys port=5435 password=info12";
-
-
     STLoaderConfiguration config;
 
-    wdb::WdbLogHandler logHandler(config.logging().loglevel, config.logging().logfile );
-    WDB_LOG & log = WDB_LOG::getInstance( "wdb.stationload.main" );
-    log.debugStream() << "Starting stationLoad" ;
+    wdb::WdbLogHandler logHandler(config.logging().loglevel, config.logging().logfile);
+    WDB_LOG & log = WDB_LOG::getInstance( "wdb.feltload.main" );
+    log.debug( "Starting feltLoad" );
 
     try {
         config.parse(argc, argv);
@@ -111,15 +107,11 @@ int main(int argc, char ** argv)
     }
 
    try {
-//        map<string, WDBStationRecord> wdb_stations_by_id, wdb_stations_by_wmono;
-        WDBDatabaseConnection wdb(config);
-//        wdb.getAllStations(wdb_stations_by_id, wdb_stations_by_wmono);
+        WDBDatabaseConnection wdb(config, logHandler);
 
         map<string, STIStationRecord> sti_stations;
         STInfosysDatabaseConnection stinfosys(config);
         stinfosys.getAllStations(sti_stations);
-
-//        std::cerr << __FUNCTION__ << " # sti_stations : "<< sti_stations.size() << std::endl;
 
         wdb.updateStations(sti_stations);
     } catch (pqxx::sql_error & e) {

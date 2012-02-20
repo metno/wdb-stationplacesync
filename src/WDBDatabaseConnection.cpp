@@ -81,8 +81,8 @@ namespace wdb { namespace load {
     }
 
 
-    WDBDatabaseConnection::WDBDatabaseConnection(const STLoaderConfiguration & config)
-        : pqxx::connection(config.database().pqDatabaseConnection()), config_(new STLoaderConfiguration(config))
+    WDBDatabaseConnection::WDBDatabaseConnection(const STLoaderConfiguration & config, WdbLogHandler & logHandler)
+        : pqxx::connection(config.database().pqDatabaseConnection()), config_(new STLoaderConfiguration(config)), logHandler_(logHandler)
     {
         setup_();
     }
@@ -122,7 +122,7 @@ namespace wdb { namespace load {
 
             perform(GetAllWDBStations(stations_by_id));
 
-            std::cerr << "# rows by STATIONID: "<< stations_by_id.size() << std::endl;
+            log.infoStream() << "# rows by STATIONID: "<< stations_by_id.size(); // << std::endl;
 
             perform(WciEnd(), 1);
         }
@@ -133,7 +133,7 @@ namespace wdb { namespace load {
 
             perform(GetAllWDBStations(stations_by_wmono));
 
-            std::cerr << "# rows by WMONO : "<< stations_by_wmono.size() << std::endl;
+            log.infoStream() << "# rows by WMONO : "<< stations_by_wmono.size(); // << std::endl;
 
             perform(WciEnd(), 1);
         }
@@ -184,7 +184,7 @@ namespace wdb { namespace load {
                     } else {
 //                        std::time(&now);
 //                        std::cerr<<"@"<<now<<" "<<__FUNCTION__<<"|"<<__LINE__<<": CHECK POINT"<<std::endl;
-//                        std::cerr<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+                        std::cerr<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
                     }
 
 
@@ -231,7 +231,7 @@ namespace wdb { namespace load {
                                 std::cout<<e.what()<<std::endl;
                             }
                         } else {
-//                            std::cerr<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+                            std::cerr<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
                         }
                     }
 
@@ -273,7 +273,7 @@ namespace wdb { namespace load {
                         }
                     } else {
 //                        std::cerr<<"¤¤¤";
-//                        std::cerr<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+                        std::cerr<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
                     }
 
                 } else {
@@ -311,7 +311,7 @@ namespace wdb { namespace load {
                             }
                         } else {
 //                            std::cerr<<"~~~";
-//                            std::cerr<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
+                            std::cerr<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_).toString()<<std::endl;
                         }
                     }
 

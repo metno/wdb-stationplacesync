@@ -32,7 +32,13 @@
 
 #include "DBStructs.h"
 
+// wdb
+#include <wdbLogHandler.h>
+
+// libpqxx
 #include <pqxx/connection>
+
+// std
 #include <string>
 #include <limits>
 
@@ -41,7 +47,7 @@ namespace wdb { namespace load {
     class WDBDatabaseConnection : public pqxx::connection
     {
     public:
-        explicit WDBDatabaseConnection(const STLoaderConfiguration& configuration);
+        explicit WDBDatabaseConnection(const STLoaderConfiguration& configuration, WdbLogHandler & logHandler);
         virtual ~WDBDatabaseConnection();
 
         void getAllStations(std::map<std::string, WDBStationRecord>& stations_by_id, std::map<std::string, WDBStationRecord>& stations_by_wmono);
@@ -50,6 +56,7 @@ namespace wdb { namespace load {
     private:
         void setup_();
         const STLoaderConfiguration* config_;
+        wdb::WdbLogHandler & logHandler_;
     };
 
 } } /* namespaces */
