@@ -88,7 +88,7 @@ int main(int argc, char ** argv)
 
     wdb::WdbLogHandler logHandler(config.logging().loglevel, config.logging().logfile);
     WDB_LOG & log = WDB_LOG::getInstance( "wdb.feltload.main" );
-    log.debug( "Starting feltLoad" );
+    //log.debug( "Starting feltLoad" );
 
     try {
         config.parse(argc, argv);
@@ -116,13 +116,13 @@ int main(int argc, char ** argv)
         wdb.updateStations(sti_stations);
     } catch (pqxx::sql_error & e) {
         // Handle sql specific errors, such as connection problems, here.
-        clog << e.what() << endl;
+        cerr << e.what() << endl;
         return 1;
     } catch (exception & e) {
-        clog << e.what() << endl;
+        cerr << e.what() << endl;
         return 1;
     }
 
-    log.debugStream() << "Stopping stationLoad";
+    //log.debugStream() << "Stopping stationLoad";
 }
 
