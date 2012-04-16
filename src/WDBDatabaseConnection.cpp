@@ -34,28 +34,23 @@
 #include "transactors/getAllWDBStations.h"
 
 // WDB
-//
 #include <wdbMath.h>
 #include <wdbMathC.h>
 #include <wdb/wdbSetup.h>
 #include <wdb/LoaderConfiguration.h>
 
 // GEOS
-//
 #include <geos_c.h>
 #include <cstdarg>
 
 // PQXX
-//
 #include <pqxx/pqxx>
 
 // BOOST
-//
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 // STD
-//
 #include <cassert>
 #include <map>
 #include <string>
@@ -165,17 +160,16 @@ namespace wdb { namespace load {
 
                     std::string wkt("POINT(");
                     wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
+
+                    std::cout<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<wkt<<std::endl;
+
                     if(!config_->output().dry_run) {
                         try {
                             perform(UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
                         } catch (const std::exception& e) {
-                            std::cerr<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<wkt<<std::endl;
                             std::cerr<<e.what()<<std::endl;
                         }
-                    } else {
-                        std::cout<<"ADD statioinid: "<<sti_st.id_<<" WKT: "<<wkt<<std::endl;
                     }
-
                 } else {
 
                     // check if station param have been changed
@@ -201,15 +195,15 @@ namespace wdb { namespace load {
                     {
                         std::string wkt("POINT(");
                         wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
+
+                        std::cout<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<wkt<<std::endl;
+
                         if(!config_->output().dry_run) {
                             try {
                                 perform(UpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
                             } catch(const std::exception& e) {
-                                std::cerr<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<wkt<<std::endl;
                                 std::cerr<<e.what()<<std::endl;
                             }
-                        } else {
-                            std::cout<<"UPDATE statioinid: "<<sti_st.id_<<" WKT: "<<wkt<<std::endl;
                         }
                     }
 
@@ -241,15 +235,14 @@ namespace wdb { namespace load {
                     std::string wkt("POINT(");
                     wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
 
+                    std::cout<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<wkt<<std::endl;
+
                     if(!config_->output().dry_run) {
                         try {
                             perform(UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
                         } catch(const std::exception& e) {
-                            std::cerr<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<wkt<<std::endl;
                             std::cerr<<e.what()<<std::endl;
                         }
-                    } else {
-                        std::cout<<"ADD wmono: "<<sti_st.wmo_<<" WKT: "<<wkt<<std::endl;
                     }
 
                 } else {
@@ -277,16 +270,15 @@ namespace wdb { namespace load {
                         std::string wkt("POINT(");
                         wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
 
+                        std::cout<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<wkt<<std::endl;
+
                         if(!config_->output().dry_run){
                             try {
                                 perform(UpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
                             } catch(const std::exception& e) {
-                                std::cerr<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<wkt<<std::endl;
                                 std::cerr<<e.what()<<std::endl;
                             }
-                        } else {
-                            std::cout<<"UPDATE WMONO: "<<sti_st.wmo_<<" WKT: "<<wkt<<std::endl;
-                        }
+                        } 
                     }
 
                     GEOSGeom_destroy(g);
