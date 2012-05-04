@@ -1,3 +1,9 @@
+wdb-stationload (1.0.3-ubuntu1) experimental lucid; urgency=low
+
+  * some refactoring
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Mon, 16 Apr 2012 10:00:00 +0100
+
 wdb-stationload (1.0.2-rc2-ubuntu1) experimental lucid; urgency=low
 
   * corrected package description
