@@ -83,9 +83,11 @@ public:
             std::string stuser; /// < station database user.
             std::string stpass; /// < station database password.
             int         stport; /// < station database port.
-            std::string stupdatedafter; /// look at stations that have been updated (edited_at) after given date
-            std::string stupdatedbefore; /// look at stations that have been updated (edited_at) before given date
-            std::string stlimit; /// works like limit in SQL
+            //std::string stupdatedafter; /// look at stations that have been updated (edited_at) after given date
+            //std::string stupdatedbefore; /// look at stations that have been updated (edited_at) before given date
+            //std::string stlimit; /// works like limit in SQL
+			int cnsNamespace;
+			int wmoNamespace;
 
             bool load_wmono_;
             bool load_stationid_;

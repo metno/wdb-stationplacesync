@@ -68,7 +68,7 @@ namespace wdb { namespace load {
     void STInfosysDatabaseConnection::getAllStations(std::map<std::string, STIStationRecord>& stations)
     {
         //WDB_LOG & log = WDB_LOG::getInstance("wdb.load.stidatabaseconnection");
-        perform(GetAllSTIStations(stations, config_->loading().stupdatedafter, config_->loading().stupdatedbefore, config_->loading().stlimit));
+        perform(GetAllSTIStations(stations));
         std::cout<<"# rows by STI: "<< stations.size()<<std::endl;
     }
 

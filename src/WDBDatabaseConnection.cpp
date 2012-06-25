@@ -113,7 +113,7 @@ namespace wdb { namespace load {
 
         // get stations from stationid
         {
-            perform(WciBegin((config_->database().user), 88, 123, 88));
+            perform(WciBegin((config_->database().user), 88, config_->loading().cnsNamespace, 88));
 
             perform(GetAllWDBStations(stations_by_id));
 
@@ -124,7 +124,7 @@ namespace wdb { namespace load {
 
         // get stations from wmono
         {
-            perform(WciBegin((config_->database().user), 88, 456, 88));
+            perform(WciBegin((config_->database().user), 88, config_->loading().wmoNamespace, 88));
 
             perform(GetAllWDBStations(stations_by_wmono));
 
@@ -150,7 +150,7 @@ namespace wdb { namespace load {
         if(config_->loading().load_stationid_ || (!config_->loading().load_stationid_ && !config_->loading().load_wmono_))
         { /// update STATIONID namespace
 
-            perform(WciBegin((config_->database().user), 88, 123, 88));
+            perform(WciBegin((config_->database().user), 88, config_->loading().cnsNamespace, 88));
 
             std::map<std::string, STIStationRecord>::const_iterator cit;
             for(cit = sti_stations.begin(); cit != sti_stations.end(); ++cit) {
@@ -221,7 +221,7 @@ namespace wdb { namespace load {
         if(config_->loading().load_wmono_ || (!config_->loading().load_stationid_ && !config_->loading().load_wmono_))
         { /// update WMONO namespace
 
-            perform(WciBegin((config_->database().user), 88, 456, 88));
+            perform(WciBegin((config_->database().user), 88, config_->loading().wmoNamespace, 88));
 
             std::map<std::string, STIStationRecord>::const_iterator cit;
             for(cit = sti_stations.begin(); cit != sti_stations.end(); ++cit) {

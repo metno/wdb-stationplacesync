@@ -91,9 +91,11 @@ getLoading( STLoaderConfiguration::STLoadingOptions & out, const std::string & d
         ( "stuser", value( & out.stuser ), "Specify stations database user" )
         ( "stpass", value( & out.stpass ), "Specify stations database password" )
         ( "stport", value( & out.stport )->default_value( 5432 ), "Specify stations database port (default 5432)" )
-        ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
-        ( "before", value( & out.stupdatedbefore ), "Specify date of last update for stations (=< before)" )
-        ( "limit", value( & out.stlimit ), "Specify the limit on stations to be updated (=< limit)" )
+		( "cns-namespace", value( & out.cnsNamespace )->default_value( 88000 ), "Specify stationid namespace (default 88000)" )
+		( "wmo-namespace", value( & out.wmoNamespace )->default_value( 88001 ), "Specify WMO namespace (default 88001)" )
+//        ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
+//        ( "before", value( & out.stupdatedbefore ), "Specify date of last update for stations (=< before)" )
+//        ( "limit", value( & out.stlimit ), "Specify the limit on stations to be updated (=< limit)" )
     ;
 
     return loading;

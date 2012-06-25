@@ -26,6 +26,10 @@
  MA  02110-1301, USA
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "STLoaderConfiguration.h"
 #include "WDBDatabaseConnection.h"
 #include "STInfosysDatabaseConnection.h"
@@ -63,7 +67,7 @@ namespace
  */
 void version( ostream & out )
 {
-//    out << PACKAGE_STRING << endl;
+    out << PACKAGE_STRING << endl;
 }
 
 /**
@@ -75,7 +79,7 @@ void help( const boost::program_options::options_description & options, ostream 
 {
     version( out );
     out << '\n';
-//    out << "Usage: "PACKAGE_NAME" [OPTIONS] FILES...\n\n";
+    out << "Usage: PACKAGE_NAME [OPTIONS] FILES...\n\n";
     out << "Options:\n";
     out << options << endl;
 }
@@ -91,13 +95,15 @@ int main(int argc, char ** argv)
     //log.debug( "Starting feltLoad" );
 
     try {
-        config.parse(argc, argv);
+
+	    config.parse(argc, argv);
+	    if(config.general().version) {
+	        version(cerr);
+		    return 0;
+	    }
+
         if(config.general().help) {
             help(config.shownOptions(), cerr);
-            return 0;
-        }
-        if(config.general().version) {
-            version(cerr);
             return 0;
         }
     } catch(exception & e) {
