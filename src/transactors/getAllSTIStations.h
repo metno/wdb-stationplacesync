@@ -72,7 +72,7 @@ namespace wdb { namespace load {
         void operator()(argument_type &T)
         {
             std::string query =
-                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 "
+                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime AT TIME ZONE 'UTC', st1.totime AT TIME ZONE 'UTC' FROM station st1 "
                     " JOIN (SELECT stationid, MAX(fromtime) AS maxtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) group by stationid) st2 "
                     " ON (st1.stationid = st2.stationid AND st1.fromtime >= st2.maxtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
 
@@ -81,16 +81,16 @@ namespace wdb { namespace load {
 //                    " ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
                     ;
 
-            if(!edited_after_.empty())
-                query.append(" AND st1.edited_at >= ").append("'").append(edited_after_).append("'");
+//            if(!edited_after_.empty())
+//                query.append(" AND st1.edited_at >= ").append("'").append(edited_after_).append("'");
 
-            if(!edited_before_.empty())
-                query.append(" AND st1.edited_at <= ").append("'").append(edited_before_).append("'");
+//            if(!edited_before_.empty())
+//                query.append(" AND st1.edited_at <= ").append("'").append(edited_before_).append("'");
 
             query.append(" ORDER BY st1.edited_at DESC ");
 
-            if(!limit_.empty())
-                query.append(" LIMIT ").append("'").append(limit_).append("'");
+//            if(!limit_.empty())
+//                query.append(" LIMIT ").append("'").append(limit_).append("'");
 
 
 
@@ -115,10 +115,14 @@ namespace wdb { namespace load {
                 rec.lat_  = R_[r][3].as<float>();
                 rec.wmo_  = R_[r][4].is_null() ? std::string() : R_[r][4].as<std::string>();
 
-                assert(!R_[r][5].is_null());
-                rec.from_ = R_[r][5].as<std::string>()+std::string("+00");
+                rec.from_ = R_[r][5].as<std::string>();
+                rec.to_   = R_[r][6].is_null() ? std::string("infinity") : R_[r][6].as<std::string>();
 
-                rec.to_   = R_[r][6].is_null() ? std::string("infinity") : R_[r][6].as<std::string>()+std::string("+00");
+				if(rec.from_.find("+00") == std::string::npos)
+						rec.from_ += std::string("+00");
+
+				if(rec.to_.find("infinity") == std::string::npos && rec.to_.find("+00") == std::string::npos)
+						rec.to_ += std::string("+00");
 
                 if(out_.count(rec.id_) != 0)
                     std::cout << "EXISTS STATIONID: " << rec.id_<<std::endl;

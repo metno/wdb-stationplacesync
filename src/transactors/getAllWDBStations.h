@@ -75,7 +75,7 @@ namespace wdb { namespace load {
         {
             std::string query =
                     " SELECT tb1.placeid id, tb1.placename AS name, tb1.originalsrid srid, ST_AsText(tb1.placegeometry) wkt, "
-                    " tb2.placenamevalidfrom AS validfrom, tb2.placenamevalidto AS validto "
+                    " tb2.placenamevalidfrom AT TIME ZONE 'UTC' AS validfrom, tb2.placenamevalidto AT TIME ZONE 'UTC' AS validto"
                     " FROM wci.getPlacePoint(NULL) tb1 INNER JOIN (select * from wci.getPlaceName(NULL, NULL)) AS tb2 "
                     " ON (tb1.placeid = tb2.placeid) ORDER BY tb1.placestoretime ASC;";
 
@@ -100,14 +100,12 @@ namespace wdb { namespace load {
                 rec.from_ = R_[r][4].as<std::string>();
                 rec.to_   = R_[r][5].as<std::string>();
 
-//                if(out_.count(rec.id_) != 0) {
-//                    std::cerr << "already have entry with STATIONID: " << rec.id_ <<std::endl;
-//                }
+                // comparing times as strings some have "infinity" as value)
+                if(rec.from_.find("+00") == std::string::npos)
+						rec.from_ = rec.from_ + std::string("+00");
 
-    //            std::cerr
-    //                    << rec.id_ <<" | "<< rec.name_ << " | " << rec.srid_<< " | "
-    //                    << rec.wkt_ << "|"<< rec.from_ << " | " << rec.to_
-    //                    << std::endl;
+				if(rec.to_.find("infinity") == std::string::npos && rec.to_.find("+00") == std::string::npos)
+						rec.to_ = rec.to_ + std::string("+00");
 
                 out_.insert(std::make_pair<std::string, WDBStationRecord>(rec.name_, rec));
             }
