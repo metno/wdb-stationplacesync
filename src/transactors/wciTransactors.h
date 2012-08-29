@@ -76,6 +76,8 @@ namespace wdb { namespace load {
          */
         void operator()(argument_type &T)
         {
+            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
+            log.infoStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] CHECK ";
             std::ostringstream query;
             query << "SELECT wci.begin('" << wciUser_ << "'";
 
@@ -84,8 +86,6 @@ namespace wdb { namespace load {
 
             query << ')';
             pqxx::result R = T.exec(query.str());
-//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
-//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<query.str()<<std::endl;
         }
 
         /**
@@ -93,9 +93,8 @@ namespace wdb { namespace load {
          */
         void on_commit()
         {
-//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
-//            log.infoStream() << "wci.begin call complete";
-//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"wci.begin call complete"<<std::endl;
+            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
+            log.infoStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "wci.begin call complete";
         }
 
         /**
@@ -105,8 +104,7 @@ namespace wdb { namespace load {
         void on_abort(const char Reason[]) throw ()
         {
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
-            log.errorStream() << "Transaction " << Name() << " failed " << Reason;
-//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"Transaction " << Name() << " failed " << Reason<<std::endl;
+            log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "Transaction " << Name() << " failed " << Reason;
         }
 
         /**
@@ -116,8 +114,7 @@ namespace wdb { namespace load {
         void on_doubt() throw ()
         {
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wcibegin");
-            log.errorStream() << "Transaction " << Name() << " in indeterminate state";
-//            std::cerr<<__FUNCTION__<<"|"<<__LINE__<<":"<<"Transaction " << Name() << " in indeterminate state"<<std::endl;
+            log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "Transaction " << Name() << " in indeterminate state";
         }
 
     private:
