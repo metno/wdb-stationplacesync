@@ -52,7 +52,7 @@ namespace wdb { namespace load {
     /**
      * Transactor to create a user
      */
-    class UpdatePlacePoint : public AddPlacePoint
+    class UpdatePlaceCPoint : public AddPlacePoint
     {
     public:
         /**
@@ -61,7 +61,7 @@ namespace wdb { namespace load {
          * @param 	geometry	place geometry as WKT
          */
 
-        UpdatePlacePoint(const std::string& placename, const std::string& geometry, const std::string& validfrom, const std::string& validto = "infinity")
+        UpdatePlaceCPoint(const std::string& placename, const std::string& geometry, const std::string& validfrom, const std::string& validto = "infinity")
             : AddPlacePoint(placename, geometry, validfrom, validto, "UpdatePlacePoint")
         {
 //            std::ostringstream query;

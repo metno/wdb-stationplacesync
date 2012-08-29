@@ -1,3 +1,15 @@
+wdb-stationload (1.0.6-ubuntu1) experimental lucid; urgency=low
+
+  * making sure that all time are in UTC
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Thu, 28 Jun 2012 10:00:00 +0100
+
+wdb-stationload (1.0.5-1-ubuntu1) experimental lucid; urgency=low
+
+  * added 2 cmd line options; namepsaces where stationid and wmo will be loaded 
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Mon, 25 Jun 2012 10:00:00 +0100
+
 wdb-stationload (1.0.3-ubuntu1) experimental lucid; urgency=low
 
   * some refactoring

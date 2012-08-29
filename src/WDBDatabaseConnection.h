@@ -50,8 +50,7 @@ namespace wdb { namespace load {
         explicit WDBDatabaseConnection(const STLoaderConfiguration& configuration, WdbLogHandler & logHandler);
         virtual ~WDBDatabaseConnection();
 
-        void getAllStations(std::map<std::string, WDBStationRecord>& stations_by_id, std::map<std::string, WDBStationRecord>& stations_by_wmono);
-        void updateStations(std::map<std::string, STIStationRecord>& stations_by_id);
+        void updateStations(std::vector<STIStationRecord>& stations_by_id);
 
     private:
         void setup_();

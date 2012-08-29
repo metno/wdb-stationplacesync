@@ -37,8 +37,8 @@
 
 // SYSTEM INCLUDES
 #include <string>
-#include <boost/program_options/positional_options.hpp>
 
+using namespace std;
 
 namespace wdb { namespace load {
 
@@ -51,31 +51,15 @@ namespace wdb { namespace load {
 class STLoaderConfiguration : public WdbConfiguration
 {
 public:
-        // LIFECYCLE
-        /**
-         * Default Constructor
-         */
-        explicit STLoaderConfiguration( const std::string & defaultDataProvider = "");
-        /**
-         * Default Destructor
-         */
-        virtual ~STLoaderConfiguration();
+        STLoaderConfiguration( const std::string & defaultDataProvider = "");
+        ~STLoaderConfiguration();
 
-        /** Container for input options
-         */
-        struct InputOptions
-        {
-                std::vector<std::string> file;
-        };
-        /** Container for output options
-         */
         struct OutputOptions
         {
-                bool dry_run;
+            bool dry_run;
         };
-        /** Container for general loader options
-         */
-        struct STLoadingOptions
+
+        struct LoadingOptions
         {
             std::string defaultDataProvider;
             std::string stdatabase; /// < station database name.
@@ -83,18 +67,9 @@ public:
             std::string stuser; /// < station database user.
             std::string stpass; /// < station database password.
             int         stport; /// < station database port.
-            //std::string stupdatedafter; /// look at stations that have been updated (edited_at) after given date
-            //std::string stupdatedbefore; /// look at stations that have been updated (edited_at) before given date
-            //std::string stlimit; /// works like limit in SQL
-			int cnsNamespace;
-			int wmoNamespace;
-
-            bool load_wmono_;
-            bool load_stationid_;
-
-            /// what namespaces to use
-            std::string stationidNameSpace; /// uses stationid(from STINFOSYS) as placename into wdb
-            std::string wmonoNameSpace; /// uses wmono(from STINFOSYS) as placename into wdb
+            std::string stupdatedafter; /// look at stations that have been updated (edited_at) after given date
+            int cnsNamespace;
+            int wmoNamespace;
 
             /**
               * Generate and return a pq compatible database connection string using
@@ -104,49 +79,13 @@ public:
             std::string psqlDatabaseConnection() const;
         };
 
-        /** Get the input options
-         *  @return 	The input options
-         */
-        const InputOptions & input() const { return input_; }
-
-        /** Get the output options
-         *  @return 	The output options
-         */
         const OutputOptions & output() const { return output_; }
-
-        /** Get the general loading options
-         */
-        const STLoadingOptions & loading() const { return loading_; }
-
-        /** Get the positional options of the loader
-         *  Used for returning the file name
-         *  @return 	The positional options
-         */
-        boost::program_options::positional_options_description & positionalOptions() { return positionalOptions_; }
-
+        const LoadingOptions & loading() const { return loading_; }
 protected:
-        using WdbConfiguration::parse_;
-
-        /**
-          * Parse arguments from a given file
-          * @param	argc		Number of command line arguments
-          * @param	argv		The actual command line arguments
-          */
-        virtual void parse_( int argc, char ** argv );
-
-        /**
-          * |Commands to be performed after parsing arguments
-          */
-        /// Positional options
-        boost::program_options::positional_options_description positionalOptions_;
-        /// Input options
-        InputOptions input_;
-        /// Output options
         OutputOptions output_;
-        /// loading options
-        STLoadingOptions loading_;
+        LoadingOptions loading_;
 
-        const std::string defaultDataProvider_;
+        const string defaultDataProvider_;
 };
 
 } }

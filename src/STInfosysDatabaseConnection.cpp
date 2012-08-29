@@ -60,16 +60,14 @@ namespace wdb { namespace load {
         delete config_;
     }
 
-    void STInfosysDatabaseConnection::setup_()
-    {
-        // NOOOP
-    }
+    void STInfosysDatabaseConnection::setup_() { }
 
-    void STInfosysDatabaseConnection::getAllStations(std::map<std::string, STIStationRecord>& stations)
+    void STInfosysDatabaseConnection::getAllStations(std::vector<STIStationRecord>& stations, const std::string& edited_after)
     {
-        //WDB_LOG & log = WDB_LOG::getInstance("wdb.load.stidatabaseconnection");
-        perform(GetAllSTIStations(stations));
-        std::cout<<"# rows by STI: "<< stations.size()<<std::endl;
+        WDB_LOG & log = WDB_LOG::getInstance("wdb.load.stidatabaseconnection");
+//        log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] CHECK ";
+        perform(GetAllSTIStations(stations, edited_after));
+        log.infoStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "# rows by STI: "<< stations.size();
     }
 
 } } /* end namespaces */

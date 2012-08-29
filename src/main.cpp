@@ -55,6 +55,7 @@
 #include <cmath>
 
 using namespace std;
+using namespace wdb;
 using namespace wdb::load;
 
 // Support Functions
@@ -85,25 +86,19 @@ void help( const boost::program_options::options_description & options, ostream 
 }
 } // namespace
 
-
 int main(int argc, char ** argv)
 {
     STLoaderConfiguration config;
 
-    wdb::WdbLogHandler logHandler(config.logging().loglevel, config.logging().logfile);
-    WDB_LOG & log = WDB_LOG::getInstance( "wdb.feltload.main" );
-    //log.debug( "Starting feltLoad" );
-
     try {
-
-	    config.parse(argc, argv);
-	    if(config.general().version) {
-	        version(cerr);
-		    return 0;
-	    }
+        config.parse(argc, argv);
+        if(config.general().version) {
+            version(cout);
+            return 0;
+        }
 
         if(config.general().help) {
-            help(config.shownOptions(), cerr);
+            help(config.shownOptions(), cout);
             return 0;
         }
     } catch(exception & e) {
@@ -112,23 +107,27 @@ int main(int argc, char ** argv)
         return 1;
     }
 
+    WdbLogHandler logHandler( config.logging().loglevel, config.logging().logfile );
+    WDB_LOG & log = WDB_LOG::getInstance( "wdb.stationload.main" );
+    log.debugStream() << "Starting stationLoad";
+
    try {
         WDBDatabaseConnection wdb(config, logHandler);
 
-        map<string, STIStationRecord> sti_stations;
+        vector<STIStationRecord> sti_stations;
         STInfosysDatabaseConnection stinfosys(config);
-        stinfosys.getAllStations(sti_stations);
+        stinfosys.getAllStations(sti_stations, config.loading().stupdatedafter);
 
         wdb.updateStations(sti_stations);
     } catch (pqxx::sql_error & e) {
         // Handle sql specific errors, such as connection problems, here.
-        cerr << e.what() << endl;
+        log.fatalStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << e.what();
         return 1;
     } catch (exception & e) {
-        cerr << e.what() << endl;
+        log.fatalStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << e.what();
         return 1;
     }
 
-    //log.debugStream() << "Stopping stationLoad";
+    log.debugStream() << "Stopping stationLoad";
 }
 

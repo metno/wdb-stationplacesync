@@ -51,7 +51,7 @@ namespace wdb { namespace load {
     /**
      * Transactor to create a user
      */
-    class AddPlacePoint : public pqxx::transactor<>
+    class AddOrUpdatePlacePoint : public pqxx::transactor<>
     {
     public:
         /**
@@ -60,16 +60,13 @@ namespace wdb { namespace load {
          * @param 	geometry	place geometry as WKT
          */
 
-        AddPlacePoint(const std::string& placename, const std::string& geometry,
+        AddOrUpdatePlacePoint(const std::string& placename, const std::string& geometry,
                       const std::string& validfrom, const std::string& validto = "infinity",
-                      const std::string& transactorname = "AddPlacePoint")
+                      const std::string& transactorname = "AddOrUpdatePlacePoint")
             : pqxx::transactor<>(transactorname),
               placeName_(placename), geometry_(geometry),
               validfrom_(validfrom), validto_(validto)
         {
-//            std::ostringstream query;
-//            query << "SELECT wci.addOrUpdatePlacePoint"<<"("<<"\'"<< placeName_ <<"\'"<< "," << "ST_GeomFromText("<< "\'"<< geometry_<<"\'"<<", 4030 )" << "," << "\'" << validfrom_ << "\'" << "," << "\'" << validto_ << "\'" << ");";
-//            query_ = query.str();
         }
 
         /**
@@ -82,9 +79,6 @@ namespace wdb { namespace load {
                                              (geometry_)
                                              (validfrom_)
                                              (validto_).exec();
-//            R = T.exec(query_);
-//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-//            std::cerr << query_ << std::endl;
         }
 
         /**
@@ -92,7 +86,7 @@ namespace wdb { namespace load {
           */
         void on_commit()
         {
-//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addorupdateplacepoint");
 //            log.infoStream() << "wci.addplacepoint call complete";
         }
 
@@ -102,8 +96,8 @@ namespace wdb { namespace load {
           */
         void on_abort(const char Reason[]) throw ()
         {
-//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-//            log.errorStream() << "Transaction " << Name() << " failed " << Reason;
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addorupdateplacepoint");
+//            log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] CHECK " << "Transaction " << Name() << " failed " << Reason;
         }
 
         /**
@@ -112,8 +106,8 @@ namespace wdb { namespace load {
           */
         void on_doubt() throw ()
         {
-//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addplacepoint");
-//            log.errorStream() << "Transaction " << Name() << " in indeterminate state";
+//            WDB_LOG & log = WDB_LOG::getInstance("wdb.load.addorupdateplacepoint");
+//            log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] CHECK " << "Transaction " << Name() << " in indeterminate state";
         }
 
         std::string toString() const

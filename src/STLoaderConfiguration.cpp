@@ -33,38 +33,17 @@
 
 #include "STLoaderConfiguration.h"
 
-// BOOST
-//
+// boost
 #include <boost/program_options.hpp>
 
 using namespace std;
 using namespace boost::program_options;
-using namespace wdb::load;
 
 // Support Functions
 namespace
 {
 
-/**
- * Define the input options for the Loader
- * @param	out		Reference to option structure
- */
-options_description
-getInput(STLoaderConfiguration::InputOptions & out)
-{
-    options_description input( "Input" );
-    input.add_options()
-    ( "name", value( & out.file ), "Name of file to process" )
-    ;
-
-        return input;
-}
-
-/**
- * Define the output options for the Loader
- * @param	out		Reference to option structure
- */
-options_description getOutput(STLoaderConfiguration::OutputOptions & out)
+options_description getOutput(wdb::load::STLoaderConfiguration::OutputOptions & out)
 {
     options_description output( "Output" );
     output.add_options()
@@ -74,28 +53,19 @@ options_description getOutput(STLoaderConfiguration::OutputOptions & out)
     return output;
 }
 
-/**
- * Define the general options for the Loader
- * @param	out		Reference to option structure
- */
-options_description
-getLoading( STLoaderConfiguration::STLoadingOptions & out, const std::string & defaultDataProvider )
+options_description getLoading(wdb::load::STLoaderConfiguration::LoadingOptions & out, const std::string & defaultDataProvider )
 {
     out.defaultDataProvider = defaultDataProvider;
-    options_description loading("Loading");
+    options_description loading("Station Loading");
     loading.add_options()
-//    ( "load_wmono", bool_switch( & out.load_wmono_ )->default_value( false ), "Load into WMO namespace" )
-//    ( "load_stationid", bool_switch( & out.load_stationid_ )->default_value( false ), "Load into STATIONID namespace" )
         ( "stdatabase", value( & out.stdatabase ), "Specify stations database name" )
         ( "sthost", value( & out.sthost ), "Specify stations database host" )
         ( "stuser", value( & out.stuser ), "Specify stations database user" )
         ( "stpass", value( & out.stpass ), "Specify stations database password" )
         ( "stport", value( & out.stport )->default_value( 5432 ), "Specify stations database port (default 5432)" )
-		( "cns-namespace", value( & out.cnsNamespace )->default_value( 88000 ), "Specify stationid namespace (default 88000)" )
-		( "wmo-namespace", value( & out.wmoNamespace )->default_value( 88001 ), "Specify WMO namespace (default 88001)" )
-//        ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
-//        ( "before", value( & out.stupdatedbefore ), "Specify date of last update for stations (=< before)" )
-//        ( "limit", value( & out.stlimit ), "Specify the limit on stations to be updated (=< limit)" )
+        ( "cns-namespace", value( & out.cnsNamespace )->default_value( 88000 ), "Specify stationid namespace (default 88000)" )
+        ( "wmo-namespace", value( & out.wmoNamespace )->default_value( 88001 ), "Specify WMO namespace (default 88001)" )
+        ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
     ;
 
     return loading;
@@ -103,38 +73,23 @@ getLoading( STLoaderConfiguration::STLoadingOptions & out, const std::string & d
 
 } // namespace support functions
 
-
+namespace wdb { namespace load {
 STLoaderConfiguration::STLoaderConfiguration(const std::string & defaultDataProvider)
-        : defaultDataProvider_(defaultDataProvider)
+        : WdbConfiguration(""), defaultDataProvider_(defaultDataProvider)
 {
-        cmdOptions().add( getInput( input_ ) );
         cmdOptions().add( getOutput( output_ ) );
+        cmdOptions().add( getLoading( loading_, defaultDataProvider_ ) );
+
+        configOptions().add( getOutput( output_ ) );
         configOptions().add( getLoading( loading_, defaultDataProvider_ ) );
 
         shownOptions().add( getOutput( output_ ) );
         shownOptions().add( getLoading( loading_, defaultDataProvider_  ) );
-
-        positionalOptions().add( "name", -1 );
 }
 
-STLoaderConfiguration::~STLoaderConfiguration()
-{
-    // NOOP
-}
+STLoaderConfiguration::~STLoaderConfiguration() { }
 
-void STLoaderConfiguration::parse_( int argc, char ** argv )
-{
-        options_description opt;
-        opt.add( cmdOptions() ).add( configOptions() );
-
-        store( command_line_parser( argc, argv ).
-                                options( opt ).
-                                positional( positionalOptions_ ).
-                                run(),
-                        givenOptions_ );
-}
-
-string STLoaderConfiguration::STLoadingOptions::pqDatabaseConnection() const
+string STLoaderConfiguration::LoadingOptions::pqDatabaseConnection() const
 {
         ostringstream ret;
         ret << "dbname=" << stdatabase.c_str() << " ";
@@ -148,7 +103,7 @@ string STLoaderConfiguration::STLoadingOptions::pqDatabaseConnection() const
         return ret.str();
 }
 
-string STLoaderConfiguration::STLoadingOptions::psqlDatabaseConnection() const
+string STLoaderConfiguration::LoadingOptions::psqlDatabaseConnection() const
 {
         ostringstream ret;
         ret << "-d" << stdatabase;
@@ -158,3 +113,4 @@ string STLoaderConfiguration::STLoadingOptions::psqlDatabaseConnection() const
         ret << " -U" << stuser;
         return ret.str();
 }
+} }
