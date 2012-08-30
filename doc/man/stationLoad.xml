@@ -16,8 +16,10 @@
 	
 	<refnamediv>
 		<refname>stationLoad</refname>
-                <refpurpose>Load weather stations location (and other meta-data) into the WDB database.
-                            It is a part of the WDB system.
+                <refpurpose>Load weather stations meta-data (location, validity time ...) into the WDB database.
+                            The original data is read from STINFOSYS database (so ... blame it if you don't like the data).
+                            The stationLoad work pretty much simple. It reads records and inserts them into WDB.
+                            It is up to WDB to handle the meta-data properly and consitently.
                 </refpurpose>
 	</refnamediv>
 	
@@ -33,15 +35,21 @@
 		
                 <para>stationLoad loads meta-data of the weather station(s) into the wdb database.
                       The WDB database must be up and running for this program to work, unless one of the options:
-                      --help or --list have been given on the command line.
+                      --help or --dry-run have been given on the command line.
                 </para>
 		
 		<para>The STINFOSYS (http://stinfosys) is considered as the authoritative source for weather stations
-                      at the met.no. STINFOSYS holds, among other things, information about stations position, their WMO number,
+                      at the met.no. STINFOSYS holds, among other things, information about station positions, their WMO number,
                       internal ID, place name, validity dates and so on.
-                      Only internal ID is unique. WMO (synop) number is not defined for each station. Place names are not unique.
-                      The internal IDs are used as placename within default placenamespaceid.
-                      The WMO numbers are used as value for placename within 4356 placenamespaceid.
+                      Only internal ID is unique. WMO (synop) number is not defined for each station. The actual names of the palces are not unique.
+                      The internal IDs are used as value for placename within 88000 placenamespaceid.
+                      The WMO numbers are used as value for placename within 88001 placenamespaceid.
+                      
+                      Pay atttention to the --after option. If ommited, the stationLoad will process all entries frim STINFOSYS.
+                      This is proper behavior for inital loading.
+                      
+                      When --after defined, the stationLoad will process entries that were updated >= after value.
+                      This is proper behavior for stationary case.
                 </para>
 		
 	</refsect1>
@@ -67,6 +75,30 @@
 			</varlistentry>
 			
 			<varlistentry>
+				<term>--config FILENAME.CONF</term>
+				<listitem>
+					<para>Main configuration file that defines command line options.
+					      Options given on the command line will override values in config file.</para>
+				</listitem>
+			</varlistentry>
+			
+			<varlistentry>
+				<term>--cns-namespace ARG</term>
+				<listitem>
+					<para>Specify wdb palcenamespaceid where metadata is to be stored with stationid 
+					(within STINFOSYS) as value for place name. The default placenamespace is 88000.</para>
+				</listitem>
+			</varlistentry>
+			
+			<varlistentry>
+				<term>--wmo-namespace ARG</term>
+				<listitem>
+					<para>Specify wdb palcenamespaceid where metadata is to be stored with WMO number
+					(within STINFOSYS) as value for place name. The default placenamespace is 88001.</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
 				<term>--logfile FILENAME.LOG</term>
 				<listitem>
 					<para>Set output logfile. The default is to print to stdout</para>
@@ -89,29 +121,17 @@
                                         </para>
 				</listitem>
 			</varlistentry>
-			
-                        <varlistentry>
-                                <term>--limit</term>
-                                <listitem>
-                                        <para>
-                                              Upper bound on the number of stations that will be inserted/updated.
-                                        </para>
-                                </listitem>
-                        </varlistentry>
 
                         <varlistentry>
 				<term>--after</term>
 				<listitem>
-                                        <para>Lower bound on the update date for stations.</para>
+                                        <para>Lower bound on the update date for stations. Accepts several date formats (see man date), like:
+                                              "Thu Aug 30 09:38:43 CEST 2012", "2012-08-21", "1997-07-16T19:20+01:00", "20012/08/21" etc.
+                                              Use (double/single) quotes to delimit date value.
+                                              
+                                              If the value is missing stationLoad will take all entries from STINFOSYS - god for inital wdb loading.</para>
 				</listitem>
 			</varlistentry>
-			
-                        <varlistentry>
-                                <term>--buffer</term>
-                                <listitem>
-                                        <para>Upper bound on the update date for stations.</para>
-                                </listitem>
-                        </varlistentry>
 			
 			<varlistentry>
 				<term>-d DBNAME</term>
@@ -183,8 +203,7 @@
 		<title>Exit Status</title>
 		
 		<para>stationLoad returns 0 to the shell if it finished normally and 1 if a fatal error
-		      occured during loading (out of memory, files not found, database not found,
-		      etc.).
+		      occured during loading (out of memory, database not found, etc.).
                 </para>
 
                 <para>
