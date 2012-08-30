@@ -17,8 +17,7 @@ wdblibdir =                     $(libdir)/wdb/
 stationloadbindir= $(bindir)
 #dist_stationloadbin_SCRIPTS= stationLoad
 
-etcstationloaddir = /etc
-dist_etcstationload_DATA =
+dist_sysconf_DATA =
 
 # Setting Targets
 bin_PROGRAMS = stationLoad

@@ -77,9 +77,6 @@ namespace wdb { namespace load {
 STLoaderConfiguration::STLoaderConfiguration(const std::string & defaultDataProvider)
         : WdbConfiguration(""), defaultDataProvider_(defaultDataProvider)
 {
-        cmdOptions().add( getOutput( output_ ) );
-        cmdOptions().add( getLoading( loading_, defaultDataProvider_ ) );
-
         configOptions().add( getOutput( output_ ) );
         configOptions().add( getLoading( loading_, defaultDataProvider_ ) );
 

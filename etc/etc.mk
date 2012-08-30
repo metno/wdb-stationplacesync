@@ -1,2 +1,2 @@
-dist_etcstationload_DATA += \
+dist_sysconf_DATA += \
                             etc/stationload.conf
