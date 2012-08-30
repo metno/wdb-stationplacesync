@@ -1,3 +1,9 @@
+wdb-stationload (1.0.7-ubuntu1) lucid; urgency=low
+
+  * new version - the business logic has been changed
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Thu, 30 Aug 2012 10:00:00 +0100
+
 wdb-stationload (1.0.6-ubuntu1) experimental lucid; urgency=low
 
   * making sure that all time are in UTC
