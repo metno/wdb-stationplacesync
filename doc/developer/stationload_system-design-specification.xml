@@ -88,24 +88,30 @@
 	<sect1>
 		<title>System Architecture</title>
 		
-		<para>The following section describes the architecture of the StationLoad system.</para>
+		<para>The following section describes the architecture of the stationLoad utility.</para>
 		
 		<sect2>
 			<title>Components</title>
 			
-                        <para>The StationLoad system consists of three logical components. Each of these
-                                components handle one of the key sequences of the task. The main StationLoad
-                                program generally takes as an in-arguments to the program the connection
-                                parameters to the STINFOSYS database where stations meta-data are hosted.
-                                The STInfosysDatabseConnection will query all station records and forward
-                                them to the WDBDatabaseConnection object. Then the WDBDatabaseConnection
-                                object will check for new and station that should be updated.
-                                </para>
+                        <para>The stationLoad utility consists of three logical components. Each of these
+                              components handles one of the key sequences of the task. The main stationLoad
+                              program generally takes (as an in-arguments) the connection parameters to both 
+                              the STINFOSYS and the WDB database.
+                       
+                              The STINFOSYS is the source for the weather stations records.
+                              The STInfosysDatabseConnection will query all station records and forward
+                              them to the WDBDatabaseConnection object.
+                       
+                             
+                              Weather stations meta-data is then loaded in WDB database.
+                              This is the job for WDBDatabaseConnection object.
+                         </para>
 			
 			<sect3>
                                 <title>Database object initialization</title>
 				
-                                <para>The main app will initialize connections towards STINFOSYS and WDB.</para>
+                                <para>The main app initializes connections towards STINFOSYS and WDB databases.
+                                      This is done by creating STInfosysDatabseConnection and WDBDatabaseConnection instances.</para>
 				
 			</sect3>
 			
@@ -113,17 +119,22 @@
                                 <title>Getting the stations from STINFOSYS</title>
 				
                                 <para>STInfosysDatabseConnection extracts records and fills container.
-                                      From cmd line we can limit this result based on the last update
-                                      date.</para>
+                                      The getAllStations() method is used for this purpose.
+                                      On the command line --after value can be specified.
+                                      This will limit this result based on the last stations update date.
+                                      If no --after value specified, all station records will be retreived from STINFOSYS.
+                                      This suggested behavior for initial loading.
+                                      The use of --after option is suggested when syncing tha data in WDB, once the intial loading has been performed.</para>
 				
 			</sect3>
 			
 			<sect3>
                                 <title>Updating stations in WDB</title>
 				
-                                <para>The updateStations method of the WDBDatabaseConnection class takes the
-                                        container with STINFOSYS data, compares it with the WDB state and then
-                                        inserts new or updates existing records.</para>
+                                <para>The updateStations method of the WDBDatabaseConnection class takes the records obtained from STINFOSYS database. 
+                                      The WDBDatabaseConnection goes through each record and calls addOrUpdatePlacePoint. The new record in WDB will be created,
+                                      or the existing one will be updated. The intention is to 'copy' the stations history from STINFOSYS to WDB as close as possible.
+                                </para>
 				
 			</sect3>
 			
@@ -135,8 +146,7 @@
 			<sect3>
 				<title>libPQXX</title>
 				
-				<para>The database API used in the StationLoad software is the libPQXX library
-				      for C++.</para>
+				<para>The database API used in the StationLoad software is the libPQXX library for C++.</para>
 				
 			</sect3>
 						
@@ -154,8 +164,7 @@
 				<title>wdbException</title>
 				
 				<para>WdbException is the default exception class for the WDB system based
-				      on std::exception. It is encapsulated in the wdbException
-				      library.</para>
+				      on std::exception. It is encapsulated in the wdbException library.</para>
 				
 			</sect3>
 			
@@ -164,31 +173,101 @@
 		<sect2>
 			<title>Program Interface</title>
 			
-			<para>StationLoad is a command-line tool. Its primary functionality 
+			<para>stationLoad is a command-line tool. Its primary functionality 
                               is executed by writing the program name followed by the
-			      station source parameters, as follows:</para>
+			      station source parameters (or main configuration file), as follows:</para>
 			
-                        <para>wdb% bin/stationLoad --conf /etc/stationLoad.cfg</para>
+                        <para>stationLoad --conf /etc/stationload.cfg</para>
 			
-                        <para>In addition to the base functionality, the StationLoad system offers a
-				number of additional options.</para>
+                        <para>In addition to the base functionality, the StationLoad system offers a number of additional options.</para>
 			
 			<itemizedlist>
-				<listitem>
-                                        <para>--dry-run</para>
-                                        <para>This option lists the SQL statements that would otherwise be executed.</para>
-				</listitem>
-				<listitem>
-                                        <para>--limit</para>
-                                        <para>Upper bound on how many stations ca be inserted/updated</para>
+                                <listitem>
+					<para>--help</para>
+					<para>Produces the help message and then exits.</para>
 				</listitem>
                                 <listitem>
-                                        <para>--after</para>
-                                        <para>Lower bound on edited_at value from STINFOSYS.station</para>
+                                        <para>--version</para>
+                                        <para>Produce version information and then exits.</para>
                                 </listitem>
                                 <listitem>
-                                        <para>--before</para>
-                                        <para>Upper bound on edited_at value from STINFOSYS.station</para>
+                                        <para>--config FILENAME.CONF</para>
+                                        <para>Main configuration file that defines command line options.
+                                              Options given on the command line will override values in config file.</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--cns-namespace ARG</para>
+                                        <para>Specify wdb palcenamespaceid where metadata is to be stored with stationid
+                                        (within STINFOSYS) as value for place name. The default placenamespace is 88000.</para>
+                                        <para>Make sure that placenamespaceid is already created in the WDB!</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--wmo-namespace ARG</para>
+                                        <para>Specify wdb palcenamespaceid where metadata is to be stored with WMO number
+                                        (within STINFOSYS) as value for place name. The default placenamespace is 88001.</para>
+                                        <para>Make sure that placenamespaceid is already created in the WDB!</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--logfile FILENAME.LOG</para>
+                                        <para>Set output logfile. The default is to print to stdout</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--loglevel LEVEL</para>
+                                        <para>Sets the logging level, from 1 (most) to 5 (least)</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--dry-run</para>
+                                        <para>
+                                              Dumps the list of SQL commands that would be sent to WDB.
+                                              No execution takes place. Useful for debugging.
+                                        </para>
+                                </listitem>
+                                <listitem>
+                                        <para>--after</para>
+                                        <para>Lower bound on the update date for stations. Accepts several date formats (see man date), like:
+                                              "Thu Aug 30 09:38:43 CEST 2012", "2012-08-21", "1997-07-16T19:20+01:00", "20012/08/21" etc.
+                                              Use (double/single) quotes to delimit date value.
+                                        </para>
+                                        <para>If the value is missing stationLoad will take all entries from STINFOSYS - god for inital wdb loading.</para>
+                                </listitem>
+                                <listitem>
+                                        <para>-d DBNAME</para>
+                                        <para>--database=DBNAME</para>
+                                        <para>Specify the database name to connect to (e.g., wdb).</para>
+                                </listitem>
+                                <listitem>
+                                        <para>-h DBHOST</para>
+                                        <para>--host=DBHOST</para>
+                                        <para>Specify the database host to connect to (e.g., somehost.met.no).</para>
+                                </listitem>
+                                <listitem>
+                                        <para>-u DBUSER</para>
+                                        <para>--user=DBUSER</para>
+                                        <para>Specify the WDB user to connect as. The database user must have
+                                              access to the wdb_grib role (this is will usually be the case if the
+                                              stationLoad process is being run by the creator of the database).
+                                        </para>
+                                </listitem>
+                                <listitem>
+                                        <para>-p DBPORT</para>
+                                        <para>--port=DBPORT</para>
+                                        <para>Specify the database port to connect to (e.g., 5432).</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--stdatabase=STINFOSYS_DBNAME</para>
+                                        <para>Specify the STINFOSYS database name to connect to (e.g., stinfosys).</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--sthost=STINFOSYS_DBHOST</para>
+                                        <para>Specify the STINFOSYS host to connect to (e.g., somehost.met.no).</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--stuser=STINFOSYS_DBUSER</para>
+                                        <para>Specify the STINFOSYS user to connect as.</para>
+                                </listitem>
+                                <listitem>
+                                        <para>--stport=STINFOSYS_PORT</para>
+                                        <para>Specify the STINFOSYS port to connect to (e.g., 5432).</para>
                                 </listitem>
 			</itemizedlist>
 			
@@ -204,7 +283,8 @@
 		<sect2>
 			<title>Database Design</title>
 			
-                        <para>The data from the forecast fields are stored in the place related tables</para>
+                        <para>For the up-to-date and complete description look into the WDB documentation.</para>
+                        <para>The keywords to be searchd are: placename, placenamespaceid, wci.addOrUpdatePlacePoint etc.</para>
 			
 		</sect2>
 		
@@ -227,8 +307,7 @@
 			</figure>
 			
 			<para>This is not intended to be an exhaustive description of the classes and
-				functions in the program; for that, review the code documentation
-				generated using Doxygen.</para>
+                                functions in the program; for that, review the code itself.</para>
 			
 		</sect2>
 		
@@ -245,13 +324,13 @@
 					<para>Connect to the STINFOSYS database</para>
 				</listitem>
 				<listitem>
-                                        <para>Read all STI stations records</para>
+                                        <para>Read the STI stations records (all if no --after option given or just those whose update time is >= after)</para>
 				</listitem>
 				<listitem>
-                                        <para>Forward these record to WDBDatabaseConnection object</para>
+                                        <para>Forward the list of obtained records to WDBDatabaseConnection object</para>
 				</listitem>
                                 <listitem>
-                                        <para>call updateStations</para>
+                                        <para>Call WDBDatabaseConnection.updateStations to add/update records in the WDB database</para>
                                 </listitem>
 
 				<listitem>
@@ -267,25 +346,19 @@
 		<sect2>
 			<title>STIStationRecord</title>
 			
-                        <para>The STIStationRecord class encapsulates a single STINFOSYS record as defined in station table.
-                              It inherits pqxx::connection class.</para>
+                        <para>The STIStationRecord class encapsulates data from a single STINFOSYS record (as defined in station table).</para>
 		</sect2>
 		
 		<sect2>
-			<title>WDBStationRecord</title>
-
-			<para>The WDBStationRecord class encapsulates a single WDB palce point record.</para>
-		</sect2>
-
-		<sect2>
                         <title>STInfosysDatabaseConnection</title>
 			
-                        <para>The STInfosysDatabase class encapsulates the STINFOSYS databse. Useful function:</para>
+                        <para>The STInfosysDatabase class inherits pqxx::conection.
+                              Encapsulates the STINFOSYS databse. Useful function:</para>
 			
 			<sect3>
                                 <title>getAllStations</title>
 				
-                                <para>Extracts stations from the station table. Takes out all stations that are still in operation and that have the newest edited_at value</para>
+                                <para>Extracts stations from the station table. Takes out all stations or the ones filtered by --after value.</para>
 				
 			</sect3>
 			
@@ -301,43 +374,14 @@
 				are prepared and declared only once. The database must be indexed such that
 				all searches made occur using indexed search.</para>
 			
-                        <para>updateStations is the most important function. here we will loop through all
-                              the records from STINFOSYS and see if new station should be inserted. If some
-                              station already exists we will check if lon/lat or times have been changed.
-                              If so, we have to update it.</para>
+                        <para>updateStations is the most important function. Here we will loop through all
+                              the records from STINFOSYS and insert new or update exisitng WDB records.
+                              The idea is to keep stations history in sync between WDB and STINFOSYS databases.</para>
 			
-                        <para>IMPORTANT-. WDB is using two placenamespaceids - default and 4365.
-                              In default we are using station.stationid as placename value.
-                              In 4365 we are using station.wmono as placename value.</para>
-
-			<sect3>
-                                <title>GetAllStations</title>
-
-                                <para></para>
-
-			</sect3>
-			
-			<sect3>
-                                <title>AddPlacePoint</title>
-
-                                <para></para>
-				
-			</sect3>
-			
-                        <sect3>
-                                <title>UpdatePlacePoint</title>
-				
-                                <para></para>
-
-			</sect3>
-			
-			<sect3>
-                                <title>getPlaceName</title>
-
-                                <para></para>
-
-                        </sect3>
-
+                        <para>IMPORTANT-. WDB is using two placenamespaceids: one to insert stations with the stationid (originating from STINFOSYS) as key,
+                              and the other where WMO number is used as key.
+                              By default the first uses 88000 and the other uses 88001 as placenamespaceid.
+                        </para>
 
 		</sect2>
 		
