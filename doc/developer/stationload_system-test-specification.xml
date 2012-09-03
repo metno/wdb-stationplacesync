@@ -14,8 +14,19 @@
 	<sect1><title>Introduction</title>
 
 <para>
-    This document describes the specific tests to be carried out during the system test of the StationLoad component, used for the weather station(s) locatin(s) loading. The purpose of this component is to load station meta-data from STINFOSYS into the WDB system.
+    This document describes the specific tests to be carried out during the system test of the StationLoad component, used for the weather station(s) locatin(s) loading. 
+    The purpose of this component is to load station meta-data from STINFOSYS into the WDB system.
 </para>
+
+<para>
+    At the time there are no tests for this utility. Mainly because if 3 reasons:
+</para>
+
+<itemizedlist>
+    <listitem><para>Simple design and operation</para></listitem>
+    <listitem><para>The station history evolves over the time.</para></listitem>
+    <listitem><para>Dependency on 2 databases availability: STINFOSYS and WDB</para></listitem>
+</itemizedlist>
 
 <sect2><title>Purpose</title>
 

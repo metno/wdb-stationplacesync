@@ -48,16 +48,6 @@ namespace wdb { namespace load {
         std::string to_;
     };
 
-    struct WDBStationRecord
-    {
-        std::string id_;
-        std::string name_;
-        std::string srid_;
-        std::string wkt_;
-        std::string from_;
-        std::string to_;
-    };
-
 } } // end namespaces
 
 #endif // DBSTRUCTS_H_

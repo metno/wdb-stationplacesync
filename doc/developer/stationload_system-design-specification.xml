@@ -20,8 +20,7 @@
 			<title>Purpose</title>
 			
 			<para>The system design specification provides a comprehensive overview of
-			      the design of the software system. This is used to ensure agreement between
-			      the developers of the WDB system. It is also intended to make it easier for new
+			      the design of the software system. It is intended to make it easier for new
 			      developers of WDB to become productive developing on the system.</para>
 			
 		</sect2>
