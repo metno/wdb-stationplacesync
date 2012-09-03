@@ -14,7 +14,12 @@ water observations and forecasts. It handles both gridded data
 (raster) and point data.
 
 stationLoad:
-    is a loading program used to load met.no weather stations information into wdb.
+    Loads weather stations meta-data (location, validity time ...) into the WDB database. 
+    The original data is read from STINFOSYS database. 
+    The stationLoad operates straightforward: reads the records from STINFOSYS and inserts them into WDB. 
+    This way the stations history should be preserved in WDB as well. 
+    The WDB is expected to handle the meta-data properly and consitently. 
+    The STINFOSYS is expected to provide correct data.
 
 
 To compile and run app make sure you have wdb libraries.
@@ -30,10 +35,32 @@ STINFOSYS (see: http://stinfosys/) will be used as authoritative source for weat
 When building debian packages it is importan to have proper setup.
 This mean that all wdb dependenciea are in place. If wdb has been
 installed then include and library paths will point to it.
-However if that is not the case use environment varibales to set up:
-export LIBRARY_PATH=<some_local_path>/lib
-export C_INCLUDE_PATH=<some_local_path>/include/
-export CPLUS_INCLUDE_PATH=<some_local_path>/include/
-export LD_LIBRARY_PATH=<some_local_path>/lib
-export wdbload_CFLAGS=-I<some_local_path>/include
-export wdbload_LIBS=-lwdbLoad
+
+
+USAGE
+       stationLoad can be called with all options present on the command line (check --help or man pages).
+       It is more convenient to use main configuration file to set the values:
+
+       stationLoad --config /etc/stationload.conf
+
+       Finer logging can be turned on to see the data that is to be inserted into WDB:
+
+       stationLoad --config /etc/stationload.conf --loglevel 1
+
+       Main config file looks like:
+
+           cns-namespace=88000
+           wmo-namespace=88001
+
+           # WDB database connection parameters
+           database =     # database name
+           host =         # host name
+           port =         # port
+           user =         # user name
+
+           # STINFOSYS database connection parameters
+           stdatabase =   # database name
+           sthost =       # host name
+           stuser =       # user name
+           stport =       # port
+           stpass =       # password
