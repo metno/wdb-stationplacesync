@@ -16,10 +16,12 @@
 	
 	<refnamediv>
 		<refname>stationLoad</refname>
-                <refpurpose>Load weather stations meta-data (location, validity time ...) into the WDB database.
-                            The original data is read from STINFOSYS database (so ... blame it if you don't like the data).
-                            The stationLoad work pretty much simple. It reads records and inserts them into WDB.
-                            It is up to WDB to handle the meta-data properly and consitently.
+                <refpurpose>Loads weather stations meta-data (location, validity time ...) into the WDB database.
+                            The original data is read from STINFOSYS database.
+                            The stationLoad operates straightforward: reads the records from STINFOSYS and inserts them into WDB.
+                            This way the stations history should be preserved in WDB as well.
+                            The WDB is expected to handle the meta-data properly and consitently.
+                            The STINFOSYS is expected to provide correct data.
                 </refpurpose>
 	</refnamediv>
 	
@@ -33,23 +35,31 @@
 	<refsect1>
 		<title>Description</title>
 		
-                <para>stationLoad loads meta-data of the weather station(s) into the wdb database.
-                      The WDB database must be up and running for this program to work, unless one of the options:
+                <para>stationLoad loads meta-data for the weather station(s) into the WDB database.
+                      Bothe the WDB and the STINFOSYS databases must be up and running for this program to work, unless one of the options:
                       --help or --dry-run have been given on the command line.
                 </para>
 		
-		<para>The STINFOSYS (http://stinfosys) is considered as the authoritative source for weather stations
-                      at the met.no. STINFOSYS holds, among other things, information about station positions, their WMO number,
-                      internal ID, place name, validity dates and so on.
-                      Only internal ID is unique. WMO (synop) number is not defined for each station. The actual names of the palces are not unique.
-                      The internal IDs are used as value for placename within 88000 placenamespaceid.
-                      The WMO numbers are used as value for placename within 88001 placenamespaceid.
-                      
-                      Pay atttention to the --after option. If ommited, the stationLoad will process all entries frim STINFOSYS.
-                      This is proper behavior for inital loading.
-                      
-                      When --after defined, the stationLoad will process entries that were updated >= after value.
-                      This is proper behavior for stationary case.
+		<para>The STINFOSYS (http://stinfosys) is considered to be the authoritative source for weather stations
+                      at the met.no. STINFOSYS holds, among other things, information about station geographical positions, 
+                      their WMO number, internal ID, place name, validity dates and so on.
+                </para>
+                
+                <para>
+                      Only internal ID is unique. WMO (synop) number is not defined for each station. 
+                      The actual names of the places are not unique.
+                      The internal IDs are used as value for placename within WDB's 88000 placenamespaceid.
+                      The WMO numbers are used as value for placename within WDB's 88001 placenamespaceid.
+                </para>
+                
+                <para>
+                      If --after option ommited, the stationLoad will process all entries from STINFOSYS.
+                      This is suggested behavior for inital loading.
+                </para>
+                
+                <para>
+                      When --after defined, the stationLoad will process entries that were updated >= 'after' value.
+                      This is suggested behavior for stationary case.
                 </para>
 		
 	</refsect1>
@@ -216,4 +226,51 @@
 		
 	</refsect1>
 	
+	<refsect1>
+		<title>Usage</title>
+		
+		<para> stationLoad can be called with all options present on the command line.</para>
+		<para> However, it is more convenient to use main configuration file to set the values: </para>
+		<para>
+                      <command>stationLoad</command> --config /etc/stationload.conf
+                </para>
+                
+                <para>
+                In addition, finer logging can be turned on to see the data that is to be inserted into WDB:
+                </para>
+                <para>
+                      <command>stationLoad</command> --config /etc/stationload.conf --loglevel 1
+                </para>
+                
+                <para>
+                    Main config file looks like:
+                    <programlisting>
+                        cns-namespace=88000
+                        wmo-namespace=88001
+                        
+                        # WDB database connection parameters
+                        database =     # database name
+                        host =         # host name
+                        port =         # port
+                        user =         # user name
+
+                        # STINFOSYS database connection parameters
+                        stdatabase =   # database name
+                        sthost =       # host name
+                        stuser =       # user name
+                        stport =       # port
+                        stpass =       # password
+                    </programlisting>
+                </para>
+	</refsect1>
+	
+	<refsect1>
+	<title>Author</title>
+	<para>
+	<author>
+		<firstname>Aleksandar</firstname>
+		<surname>Babic</surname>
+	</author>
+	</para>
+</refsect1>
 </refentry>
