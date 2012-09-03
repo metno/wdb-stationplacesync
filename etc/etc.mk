@@ -1,3 +1,2 @@
-stationloadconfdir        = $(datadir)/stationLoad
-
-dist_stationloadconf_DATA = etc/stationload.conf
+dist_sysconf_DATA += \
+                            etc/stationload.conf

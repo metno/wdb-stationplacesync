@@ -9,8 +9,15 @@
 # Scanned by Autoreconf; must be static (no expansion)
 ACLOCAL_AMFLAGS =               -I config/m4
                                 
-stationloadbindir= $(bindir)
+# Share directory organization
+wdbdatadir =                    $(datadir)/wdb
+sqldir =                        $(wdbdatadir)/sql
+wdblibdir =                     $(libdir)/wdb/
 
+stationloadbindir= $(bindir)
+#dist_stationloadbin_SCRIPTS= stationLoad
+
+dist_sysconf_DATA =
 
 # Setting Targets
 bin_PROGRAMS = stationLoad
