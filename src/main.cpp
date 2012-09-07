@@ -109,7 +109,7 @@ int main(int argc, char ** argv)
 
     WdbLogHandler logHandler( config.logging().loglevel, config.logging().logfile );
     WDB_LOG & log = WDB_LOG::getInstance( "wdb.stationload.main" );
-    log.debugStream() << "Starting stationLoad";
+    log.debugStream() << "Starting wdb-stationLoad";
 
    try {
         WDBDatabaseConnection wdb(config, logHandler);
@@ -128,6 +128,6 @@ int main(int argc, char ** argv)
         return 1;
     }
 
-    log.debugStream() << "Stopping stationLoad";
+    log.debugStream() << "Stopping wdb-stationLoad";
 }
 

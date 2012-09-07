@@ -4,9 +4,10 @@
 .xml.5:
 	$(DOCBOOK) man $< -o `dirname $@`
 
-MAN_DOCS = doc/man/stationLoad.xml 
+MAN_DOCS = doc/man/wdb-stationLoad.xml 
 
 man1_MANS = $(MAN_DOCS:.xml=.1)
 
 EXTRA_DIST += $(MAN_DOCS)
 CLEANFILES += $(MAN_DOCS:.xml=.1)
+

@@ -1,4 +1,4 @@
-stationLoad_SOURCES = src/main.cpp \
+wdb_stationLoad_SOURCES = src/main.cpp \
                       src/DBStructs.h \
                       src/STLoaderConfiguration.h \
 				      src/STLoaderConfiguration.cpp \

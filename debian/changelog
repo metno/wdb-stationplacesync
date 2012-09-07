@@ -1,3 +1,9 @@
+wdb-stationload (1.0.7-1-ubuntu1) lucid; urgency=low
+
+  * improved man pages and name changed
+
+ -- Aleksandar Babic <aleksandarb@met.no>  Fri, 07 Sep 2012 10:00:00 +0100
+
 wdb-stationload (1.0.7-ubuntu1) lucid; urgency=low
 
   * new version - the business logic has been changed
