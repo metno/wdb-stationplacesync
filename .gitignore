@@ -37,3 +37,5 @@ doc/developer/stationload_system-test-specification.html
 doc/man/stationLoad.1
 
 /build
+/.cproject
+/.project
