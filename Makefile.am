@@ -22,7 +22,7 @@ wdb_stationLoad_LDADD = -lboost_system $(wdb_LIBS)
 man1_MANS = wdb-stationLoad.man
 
 wdb-stationLoad.man:   wdb-stationLoad
-	help2man -N -n"Loads station meta-data into vega wdb database " ./$< --include detailed.h2m > $@
+	help2man -N -n"Loads station meta-data into vega wdb database " ./$< --include @srcdir@/detailed.h2m > $@
 
 CLEANFILES = $(man1_MANS)
 EXTRA_DIST = detailed.h2m

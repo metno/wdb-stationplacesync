@@ -1,40 +1,47 @@
-wdb-stationload (1.0.7-3-ubuntu1) lucid; urgency=low
+wdb-stationplacesync (1.1.0-1-ubuntu1) lucid; urgency=low
+
+  * renamed the project to conform with met.no debian package naming standards
+  * minor configuration and makefile edits
+
+ -- Michael Akinde <michaeloa@met.no>  Tue, 01 Oct 2013 10:00:00 +0100
+
+wdb-stationplacesync (1.0.7-3-ubuntu1) lucid; urgency=low
 
   * improved man pages and name changed
 
  -- Aleksandar Babic <aleksandarb@met.no>  Fri, 07 Sep 2012 10:00:00 +0100
 
-wdb-stationload (1.0.7-ubuntu1) lucid; urgency=low
+wdb-stationplacesync (1.0.7-ubuntu1) lucid; urgency=low
 
   * new version - the business logic has been changed
 
  -- Aleksandar Babic <aleksandarb@met.no>  Thu, 30 Aug 2012 10:00:00 +0100
 
-wdb-stationload (1.0.6-ubuntu1) experimental lucid; urgency=low
+wdb-stationplacesync (1.0.6-ubuntu1) experimental lucid; urgency=low
 
   * making sure that all time are in UTC
 
  -- Aleksandar Babic <aleksandarb@met.no>  Thu, 28 Jun 2012 10:00:00 +0100
 
-wdb-stationload (1.0.5-1-ubuntu1) experimental lucid; urgency=low
+wdb-stationplacesync (1.0.5-1-ubuntu1) experimental lucid; urgency=low
 
   * added 2 cmd line options; namepsaces where stationid and wmo will be loaded 
 
  -- Aleksandar Babic <aleksandarb@met.no>  Mon, 25 Jun 2012 10:00:00 +0100
 
-wdb-stationload (1.0.3-ubuntu1) experimental lucid; urgency=low
+wdb-stationplacesync (1.0.3-ubuntu1) experimental lucid; urgency=low
 
   * some refactoring
 
  -- Aleksandar Babic <aleksandarb@met.no>  Mon, 16 Apr 2012 10:00:00 +0100
 
-wdb-stationload (1.0.2-rc2-ubuntu1) experimental lucid; urgency=low
+wdb-stationplacesync (1.0.2-rc2-ubuntu1) experimental lucid; urgency=low
 
   * corrected package description
 
  -- Aleksandar Babic <aleksandarb@met.no>  Mon, 20 Feb 2012 10:00:00 +0100
 
-wdb-stationload (1.0.2-ubuntu1) experimental lucid; urgency=low
+wdb-stationplacesync (1.0.2-ubuntu1) experimental lucid; urgency=low
 
   * corrected STINFOSYS SQL query
   * using 123 as palcenamespaceid for stationid
@@ -42,7 +49,7 @@ wdb-stationload (1.0.2-ubuntu1) experimental lucid; urgency=low
 
  -- Aleksandar Babic <aleksandarb@met.no>  Fri, 02 Sep 2011 10:00:00 +0100
 
-wdb-stationload (1.0.0-ubuntu1) experimental lucid; urgency=low
+wdb-stationplacesync (1.0.0-ubuntu1) experimental lucid; urgency=low
 
   * Initial build
 

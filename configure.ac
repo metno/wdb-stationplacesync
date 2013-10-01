@@ -7,7 +7,7 @@
 # Pre-Conf
 #-----------------------------------------------------------------------------
 
-AC_INIT(wdb-stationLoad, 1.0.6, [wdb@met.no])
+AC_INIT(wdb-stationplacesync, 1.1.0, [wdb@met.no])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([config/m4])
@@ -72,17 +72,17 @@ WDB_LIBWDBLOAD_CHECK
 
 WDB_CHECK
 
-AX_BOOST_BASE(1.40.0)
-AX_BOOST_PROGRAM_OPTIONS(1.40.0)
-AX_BOOST_DATE_TIME(1.40.0)
-AX_BOOST_THREAD(1.40.0)
-AX_BOOST_UNIT_TEST_FRAMEWORK(1.40.0)
+#AX_BOOST_BASE(1.40.0)
+#AX_BOOST_PROGRAM_OPTIONS(1.40.0)
+#AX_BOOST_DATE_TIME(1.40.0)
+#AX_BOOST_THREAD(1.40.0)
+#AX_BOOST_UNIT_TEST_FRAMEWORK(1.40.0)
+# BOOST
+WDB_BOOST_CHECK(1.40.0)
 
 # GEOS
 WDB_GEOS_C
 
-# BOOST
-WDB_BOOST_CHECK(1.33.1)
 
 WDB_CPPUNIT
 

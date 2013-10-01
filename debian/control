@@ -1,10 +1,10 @@
-Source: wdb-stationload
+Source: wdb-stationplacesync
 Section: science
 Priority: optional
-Maintainer: Norwegian Meteorological Institute <aleksandarb@met.no>
+Maintainer: WDB Group, Meteorologisk institutt <wdb@met.no>
 Build-Depends: debhelper (>=7.0.50~), 
  autotools-dev,
- libwdbload2-dev,
+ libwdbload-dev,
  libpqxx3-dev,
  libgeos-dev,
  libboost-dev,
@@ -20,8 +20,11 @@ Build-Conflicts: autoconf2.13, automake1.4
 Standards-Version: 3.9.1
 Homepage: http://www.met.no
 
-Package: wdb-stationload
+Package: wdb-stationplacesync-1.1
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: stationload is WDB utility
- Reads STINFOSYS database and loading stations WDB.
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Provides: wdb-stationplacesync
+Description: stationplacesync is WDB utility
+ Reads data from the STINFOSYS database as well as WDB, and generates
+ synchronization data for WDB.
