@@ -17,7 +17,7 @@ Build-Depends: debhelper (>=7.0.50~),
  xmlto,
  help2man
 Build-Conflicts: autoconf2.13, automake1.4
-Standards-Version: 3.9.1
+Standards-Version: 3.9.3
 Homepage: http://www.met.no
 
 Package: wdb-stationplacesync-1.1
