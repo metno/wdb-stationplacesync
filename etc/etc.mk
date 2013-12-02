@@ -1,2 +1,2 @@
-confdir        = $(datadir)/wdb-stationLoad
-dist_conf_DATA = etc/stationload.conf
+pkgsysconfdir        = $(sysconfdir)/wdb-stationplacesync
+dist_pkgsysconf_DATA = etc/stationload.conf

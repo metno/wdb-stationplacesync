@@ -21,11 +21,13 @@ Build-Conflicts: autoconf2.13, automake1.4
 Standards-Version: 3.9.3
 Homepage: http://www.met.no
 
-Package: wdb-stationplacesync-1.1
+Package: wdb-stationplacesync-1.3
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
 Provides: wdb-stationplacesync
+Conflicts: wdb-stationplacesync
+Replaces: wdb-stationload
 Description: stationplacesync is WDB utility
  Reads data from the STINFOSYS database as well as WDB, and generates
  synchronization data for WDB.

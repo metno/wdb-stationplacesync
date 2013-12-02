@@ -1,3 +1,15 @@
+wdb-stationplacesync (1.3.0-1) precise; urgency=low
+
+  * new version
+
+ -- Michael Akinde <michaeloa@met.no>  Wed, 27 Nov 2013 13:39:04 +0100
+
+wdb-stationplacesync (1.2.0-1) precise; urgency=low
+
+  * new version, with correct names
+
+ -- Michael Akinde <michaeloa@met.no>  Wed, 27 Nov 2013 13:29:12 +0100
+
 wdb-stationplacesync (1.1.0-1-ubuntu1) lucid; urgency=low
 
   * renamed the project to conform with met.no debian package naming standards

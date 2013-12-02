@@ -1,5 +1,5 @@
 ==============================================================
-wdb-stationLoad --- loading weather station meta-data into WDB
+wdb-stationplacesync --- loading weather station meta-data into WDB
 ==============================================================
 
 Norwegian Meteorological Institute (met.no)
@@ -13,10 +13,10 @@ WDB is a database system for storage and retrieval of weather and
 water observations and forecasts. It handles both gridded data
 (raster) and point data.
 
-wdb-stationLoad:
+wdb-stationplacesync:
     Loads weather stations meta-data (location, validity time ...) into the WDB database. 
     The original data is read from STINFOSYS database. 
-    The wdb-stationLoad operates straightforward: reads the records from STINFOSYS and inserts them into WDB. 
+    The wdb-stationplacesync operates straightforward: reads the records from STINFOSYS and inserts them into WDB. 
     This way the stations history should be preserved in WDB as well. 
     The WDB is expected to handle the meta-data properly and consitently. 
     The STINFOSYS is expected to provide correct data.
@@ -38,14 +38,14 @@ installed then include and library paths will point to it.
 
 
 USAGE
-       wdb-stationLoad can be called with all options present on the command line (check --help or man pages).
+       wdb-stationplacesync can be called with all options present on the command line (check --help or man pages).
        It is more convenient to use main configuration file to set the values:
 
-       wdb-stationLoad --config /etc/stationload.conf
+       wdb-stationplacesync --config /etc/stationload.conf
 
        Finer logging can be turned on to see the data that is to be inserted into WDB:
 
-       wdb-stationLoad --config /etc/stationload.conf --loglevel 1
+       wdb-stationplacesync --config /etc/stationload.conf --loglevel 1
 
        Main config file looks like:
 

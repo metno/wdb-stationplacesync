@@ -4,7 +4,7 @@
 .xml.5:
 	$(DOCBOOK) man $< -o `dirname $@`
 
-MAN_DOCS = doc/man/wdb-stationLoad.xml 
+MAN_DOCS = doc/man/wdb-stationplacesync.xml 
 
 man1_MANS = $(MAN_DOCS:.xml=.1)
 
