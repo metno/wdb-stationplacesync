@@ -32,6 +32,7 @@
 #include "STLoaderConfiguration.h"
 
 #include <pqxx/result.hxx>
+#include <boost/function.hpp>
 #include <string>
 
 namespace wdb {
@@ -56,8 +57,10 @@ namespace load {
 
         /**
          * The where clause that is needed to use this constructor
+         *
+         * @param earliestTime Modify statement, so no times are before the one given in this argument
          */
-        static const std::string selectWhat;
+        static std::string selectWhat(boost::function<std::string(const std::string & s)> quote, const std::string & earliestTime = std::string());
     };
 
 } } // end namespaces

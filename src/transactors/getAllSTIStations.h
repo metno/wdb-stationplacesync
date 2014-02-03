@@ -43,6 +43,8 @@
 #include <pqxx/transactor>
 #include <pqxx/result>
 
+#include <boost/function.hpp>
+
 // std
 #include <string>
 #include <vector>
@@ -51,6 +53,22 @@
 using namespace std;
 
 namespace wdb { namespace load {
+
+	namespace
+	{
+	class quote
+	{
+	public:
+		quote(const pqxx::transaction_base & t) : t_(t) {}
+
+		std::string operator () ( const std::string & s ) const
+		{
+			return t_.quote(s);
+		}
+	private:
+		const pqxx::transaction_base & t_;
+	};
+	}
 
     class GetAllSTIStations : public pqxx::transactor<>
     {
@@ -75,21 +93,20 @@ namespace wdb { namespace load {
         {
             std::ostringstream query;
 
-            query << "SELECT " << STIStationRecord::selectWhat;
-            query << " FROM station st1";
-            query << " WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL";
+            query << "SELECT " << STIStationRecord::selectWhat(quote(T), earliest_);
+            query << " FROM station";
+            query << " WHERE lon IS NOT NULL AND lat IS NOT NULL";
 
             if ( not earliest_.empty() )
-            	query << " AND st1.totime > " << T.esc(earliest_);
+            	query << " AND (totime IS NULL OR totime > " << T.quote(earliest_) << ")";
 
             if(!edited_after_.empty())
-                query << " AND st1.edited_at >= " << T.esc(edited_after_);
+                query << " AND edited_at >= " << T.quote(edited_after_);
 
-            query << " ORDER BY st1.edited_at DESC ";
-
+            query << " ORDER BY edited_at DESC ";
 
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
-            log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << " query == " << query;
+            log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << " query == " << query.str();
             R_ = T.exec(query.str());
             log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << " R_.size() == " << R_.size();
         }

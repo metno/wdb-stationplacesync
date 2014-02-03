@@ -34,7 +34,6 @@ namespace wdb {
 namespace load {
 
 
-const std::string STIStationRecord::selectWhat = "stationid, name, lon, lat, wmono, fromtime AT TIME ZONE 'UTC' AS fromtime, totime AT TIME ZONE 'UTC' AS totime";
 
 STIStationRecord::STIStationRecord(const pqxx::result::tuple & databaseRow)
 {
@@ -59,6 +58,24 @@ std::string STIStationRecord::wkt() const
     std::string wkt("POINT(");
     wkt.append(boost::lexical_cast<std::string>(wdb::round(lon, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(lat, 4))).append(")");
     return wkt;
+}
+
+std::string STIStationRecord::selectWhat(boost::function<std::string (const std::string & s)> quote, const std::string & earliestTime)
+{
+	std::ostringstream ss;
+	ss << "stationid, name, lon, lat, wmono, ";
+	if ( earliestTime.empty() )
+	{
+		ss << "fromtime AT TIME ZONE 'UTC' AS fromtime, ";
+		ss << "totime AT TIME ZONE 'UTC' AS totime";
+	}
+	else
+	{
+		ss << "GREATEST(fromtime, " << quote(earliestTime) << ") AS fromtime, ";
+		ss << "totime AT TIME ZONE 'UTC' AS totime";
+	}
+
+	return ss.str();
 }
 
 }
