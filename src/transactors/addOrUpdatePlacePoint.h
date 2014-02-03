@@ -49,7 +49,7 @@
 namespace wdb { namespace load {
 
     /**
-     * Transactor to create a user
+     * Add or update a placepoint in a wdb database
      */
     class AddOrUpdatePlacePoint : public pqxx::transactor<>
     {

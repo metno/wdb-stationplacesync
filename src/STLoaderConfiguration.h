@@ -51,7 +51,7 @@ namespace wdb { namespace load {
 class STLoaderConfiguration : public WdbConfiguration
 {
 public:
-        STLoaderConfiguration( const std::string & defaultDataProvider = "");
+        STLoaderConfiguration();
         ~STLoaderConfiguration();
 
         struct OutputOptions
@@ -59,33 +59,39 @@ public:
             bool dry_run;
         };
 
-        struct LoadingOptions
+        struct StinfosysOptions
         {
-            std::string defaultDataProvider;
             std::string stdatabase; /// < station database name.
             std::string sthost; /// < station database host.
             std::string stuser; /// < station database user.
             std::string stpass; /// < station database password.
             int         stport; /// < station database port.
+
             std::string stupdatedafter; /// look at stations that have been updated (edited_at) after given date
-            int cnsNamespace;
-            int wmoNamespace;
 
             /**
               * Generate and return a pq compatible database connection string using
               * the options given for the program.
               */
             std::string pqDatabaseConnection() const;
-            std::string psqlDatabaseConnection() const;
+        };
+
+        struct LoadingOptions
+        {
+            int cnsNamespace;
+            int wmoNamespace;
+
+            std::string earliestValidTime;
         };
 
         const OutputOptions & output() const { return output_; }
+        const StinfosysOptions & stinfosys() const { return stinfosys_; }
         const LoadingOptions & loading() const { return loading_; }
+
 protected:
         OutputOptions output_;
+        StinfosysOptions stinfosys_;
         LoadingOptions loading_;
-
-        const string defaultDataProvider_;
 };
 
 } }

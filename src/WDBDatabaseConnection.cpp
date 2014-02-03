@@ -77,7 +77,7 @@ namespace wdb { namespace load {
 
 
     WDBDatabaseConnection::WDBDatabaseConnection(const STLoaderConfiguration & config, WdbLogHandler & logHandler)
-        : pqxx::connection(config.database().pqDatabaseConnection()), config_(new STLoaderConfiguration(config)), logHandler_(logHandler)
+        : pqxx::connection(config.database().pqDatabaseConnection()), config_(config), logHandler_(logHandler)
     {
         setup_();
     }
@@ -85,7 +85,6 @@ namespace wdb { namespace load {
     WDBDatabaseConnection::~WDBDatabaseConnection()
     {
         unprepare("UpdatePlacePoint");
-        delete config_;
     }
 
     void WDBDatabaseConnection::setup_()
@@ -115,62 +114,69 @@ namespace wdb { namespace load {
 
         initGEOS(notice, notice);
 
-        //if(config_->loading().load_stationid_ || (!config_->loading().load_stationid_ && !config_->loading().load_wmono_))
-        { /// update STATIONID namespace
-
-            perform(WciBegin((config_->database().user), 88, config_->loading().cnsNamespace, 88));
-
-            std::vector<STIStationRecord>::const_iterator cit;
-            for(cit = sti_stations.begin(); cit != sti_stations.end(); ++cit) {
-
-                const STIStationRecord& sti_st = *cit;
-
-                std::string wkt("POINT(");
-                wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
-
-                log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "ADD/UPDATE statioinid: "<< sti_st.id_ << " WKT: " << wkt;
-
-                if(!config_->output().dry_run) {
-                    try {
-                        perform(AddOrUpdatePlacePoint(sti_st.id_, wkt, sti_st.from_, sti_st.to_));
-                    } catch (const std::exception& e) {
-                        log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << e.what();
-                    }
-                }
-            }
-
-            perform(WciEnd(), 1);
-        }
-
-//        if(config_->loading().load_wmono_ || (!config_->loading().load_stationid_ && !config_->loading().load_wmono_))
-        { /// update WMONO namespace
-
-            perform(WciBegin((config_->database().user), 88, config_->loading().wmoNamespace, 88));
-
-            std::vector<STIStationRecord>::const_iterator cit;
-            for(cit = sti_stations.begin(); cit != sti_stations.end(); ++cit) {
-
-                const STIStationRecord& sti_st = *cit;
-
-                if(sti_st.wmo_.empty()) {
-                    continue;
-                }
-
-                std::string wkt("POINT(");
-                wkt.append(boost::lexical_cast<std::string>(wdb::round(sti_st.lon_, 4))).append(" ").append(boost::lexical_cast<std::string>(wdb::round(sti_st.lat_, 4))).append(")");
-
-                log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "ADD/UPDATE wmono: "<<sti_st.wmo_<<" WKT: " <<wkt;
-
-                if(!config_->output().dry_run) {
-                    try {
-                        perform(AddOrUpdatePlacePoint(sti_st.wmo_, wkt, sti_st.from_, sti_st.to_));
-                    } catch(const std::exception& e) {
-                        log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << e.what();
-                    }
-                }
-            }
-
-            perform(WciEnd(), 1);
-        }
+        updateCnsNames_(sti_stations);
+        updateWmoNames_(sti_stations);
     }
-} } /* end namespaces */
+
+    void WDBDatabaseConnection::updateCnsNames_(const std::vector<STIStationRecord>& sti_stations)
+    {
+        WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wdbdatabaseconnection.cns");
+
+        perform(WciBegin(config_.database().user, 88, config_.loading().cnsNamespace, 88));
+
+        std::vector<STIStationRecord>::const_iterator cit;
+        for(cit = sti_stations.begin(); cit != sti_stations.end(); ++cit) {
+
+            const STIStationRecord& sti_st = *cit;
+
+            std::string wkt = sti_st.wkt();
+
+            log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "ADD/UPDATE statioinid: "<< sti_st.id << " WKT: " << wkt;
+
+            if(!config_.output().dry_run) {
+                try {
+                    perform(AddOrUpdatePlacePoint(sti_st.id, wkt, sti_st.from, sti_st.to));
+                } catch (const std::exception& e) {
+                    log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << e.what();
+                }
+            }
+        }
+
+        perform(WciEnd(), 1);
+    }
+
+    void WDBDatabaseConnection::updateWmoNames_(const std::vector<STIStationRecord>& sti_stations)
+    {
+        WDB_LOG & log = WDB_LOG::getInstance("wdb.load.wdbdatabaseconnection.wmo");
+
+        perform(WciBegin((config_.database().user), 88, config_.loading().wmoNamespace, 88));
+
+        std::vector<STIStationRecord>::const_iterator cit;
+        for(cit = sti_stations.begin(); cit != sti_stations.end(); ++cit) {
+
+            const STIStationRecord& sti_st = *cit;
+
+            if(sti_st.wmo.empty()) {
+                continue;
+            }
+
+            std::string wkt = sti_st.wkt();
+
+            log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "ADD/UPDATE wmono: "<<sti_st.wmo<<" WKT: " <<wkt;
+
+            if(!config_.output().dry_run) {
+                try {
+                    perform(AddOrUpdatePlacePoint(sti_st.wmo, wkt, sti_st.from, sti_st.to));
+                } catch(const std::exception& e) {
+                    log.errorStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << e.what();
+                }
+            }
+        }
+
+        perform(WciEnd(), 1);
+    }
+
+
+}
+
+} /* end namespaces */

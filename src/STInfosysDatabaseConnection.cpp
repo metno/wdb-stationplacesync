@@ -47,29 +47,24 @@ using namespace std;
 using namespace pqxx;
 using namespace pqxx::prepare;
 
-namespace wdb { namespace load {
+namespace wdb {
+namespace load {
 
     STInfosysDatabaseConnection::STInfosysDatabaseConnection(const STLoaderConfiguration & config)
-        : pqxx::connection(config.loading().pqDatabaseConnection()), config_(new STLoaderConfiguration(config))
+        : pqxx::connection(config.stinfosys().pqDatabaseConnection())
     {
-        setup_();
     }
 
     STInfosysDatabaseConnection::~STInfosysDatabaseConnection()
     {
-        delete config_;
     }
 
-    void STInfosysDatabaseConnection::setup_() { }
-
-    void STInfosysDatabaseConnection::getAllStations(std::vector<STIStationRecord>& stations, const std::string& edited_after)
+    void STInfosysDatabaseConnection::getAllStations(std::vector<STIStationRecord>& stations, const std::string& edited_after, const std::string & earliestValidTime)
     {
         WDB_LOG & log = WDB_LOG::getInstance("wdb.load.stidatabaseconnection");
-//        log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] CHECK ";
-        perform(GetAllSTIStations(stations, edited_after));
+        perform(GetAllSTIStations(stations, edited_after, earliestValidTime));
         log.infoStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << "# rows by STI: "<< stations.size();
     }
 
-} } /* end namespaces */
-
-//SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime, st1.totime FROM station st1 INNER JOIN (SELECT stationid, MAX(edited_at) AS last_updated, MAX(fromtime) AS fromtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) GROUP BY stationid) st2 ON (st1.stationid = st2.stationid AND st1.edited_at = st2.last_updated AND st1.fromtime = st2.fromtime) WHERE (st1.lon IS NOT NULL AND st1.lat IS NOT NULL);
+}
+}

@@ -43,11 +43,7 @@ namespace wdb { namespace load {
         explicit STInfosysDatabaseConnection(const STLoaderConfiguration& configuration);
         virtual ~STInfosysDatabaseConnection();
 
-        void getAllStations(std::vector<STIStationRecord>& stations, const std::string& edited_after);
-
-    private:
-        void setup_();
-        const STLoaderConfiguration* config_;
+        void getAllStations(std::vector<STIStationRecord>& stations, const std::string& edited_after, const std::string & earliestValidTime);
     };
 
 } } /* namespaces */

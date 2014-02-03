@@ -54,7 +54,11 @@ namespace wdb { namespace load {
 
     private:
         void setup_();
-        const STLoaderConfiguration* config_;
+
+        void updateCnsNames_(const std::vector<STIStationRecord> & sti_stations);
+        void updateWmoNames_(const std::vector<STIStationRecord> & sti_stations);
+
+        const STLoaderConfiguration & config_;
         wdb::WdbLogHandler & logHandler_;
     };
 

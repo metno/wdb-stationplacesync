@@ -53,19 +53,29 @@ options_description getOutput(wdb::load::STLoaderConfiguration::OutputOptions & 
     return output;
 }
 
-options_description getLoading(wdb::load::STLoaderConfiguration::LoadingOptions & out, const std::string & defaultDataProvider )
+options_description getStinfosys(wdb::load::STLoaderConfiguration::StinfosysOptions & out)
 {
-    out.defaultDataProvider = defaultDataProvider;
+    options_description stinfosys("Connection to stinfosys");
+    stinfosys.add_options()
+		( "stinfosys.database", value( & out.stdatabase ), "Specify stations database name" )
+		( "stinfosys.host", value( & out.sthost ), "Specify stations database host" )
+		( "stinfosys.user", value( & out.stuser ), "Specify stations database user" )
+		( "stinfosys.pass", value( & out.stpass ), "Specify stations database password" )
+		( "stinfosys.port", value( & out.stport )->default_value( 5432 ), "Specify stations database port (default 5432)" )
+		( "stinfosys.after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
+	;
+
+    return stinfosys;
+}
+
+
+options_description getLoading(wdb::load::STLoaderConfiguration::LoadingOptions & out )
+{
     options_description loading("Station Loading");
     loading.add_options()
-        ( "stdatabase", value( & out.stdatabase ), "Specify stations database name" )
-        ( "sthost", value( & out.sthost ), "Specify stations database host" )
-        ( "stuser", value( & out.stuser ), "Specify stations database user" )
-        ( "stpass", value( & out.stpass ), "Specify stations database password" )
-        ( "stport", value( & out.stport )->default_value( 5432 ), "Specify stations database port (default 5432)" )
+    	( "earliest", value( & out.earliestValidTime ), "Only load stations that are valid at the given time, or later." )
         ( "cns-namespace", value( & out.cnsNamespace )->default_value( 88000 ), "Specify stationid namespace (default 88000)" )
         ( "wmo-namespace", value( & out.wmoNamespace )->default_value( 88001 ), "Specify WMO namespace (default 88001)" )
-        ( "after", value( & out.stupdatedafter ), "Specify date of last update for stations (=> after)" )
     ;
 
     return loading;
@@ -74,19 +84,21 @@ options_description getLoading(wdb::load::STLoaderConfiguration::LoadingOptions 
 } // namespace support functions
 
 namespace wdb { namespace load {
-STLoaderConfiguration::STLoaderConfiguration(const std::string & defaultDataProvider)
-        : WdbConfiguration(""), defaultDataProvider_(defaultDataProvider)
+STLoaderConfiguration::STLoaderConfiguration()
+        : WdbConfiguration("")
 {
         configOptions().add( getOutput( output_ ) );
-        configOptions().add( getLoading( loading_, defaultDataProvider_ ) );
+        configOptions().add( getStinfosys( stinfosys_ ) );
+        configOptions().add( getLoading( loading_) );
 
         shownOptions().add( getOutput( output_ ) );
-        shownOptions().add( getLoading( loading_, defaultDataProvider_  ) );
+        shownOptions().add( getStinfosys( stinfosys_ ) );
+        shownOptions().add( getLoading( loading_ ) );
 }
 
 STLoaderConfiguration::~STLoaderConfiguration() { }
 
-string STLoaderConfiguration::LoadingOptions::pqDatabaseConnection() const
+string STLoaderConfiguration::StinfosysOptions::pqDatabaseConnection() const
 {
         ostringstream ret;
         ret << "dbname=" << stdatabase.c_str() << " ";
@@ -100,14 +112,6 @@ string STLoaderConfiguration::LoadingOptions::pqDatabaseConnection() const
         return ret.str();
 }
 
-string STLoaderConfiguration::LoadingOptions::psqlDatabaseConnection() const
-{
-        ostringstream ret;
-        ret << "-d" << stdatabase;
-        if (!sthost.empty())
-            ret << " -h" << sthost;
-        ret << " -p" << stport;
-        ret << " -U" << stuser;
-        return ret.str();
 }
-} }
+
+}

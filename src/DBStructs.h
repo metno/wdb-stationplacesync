@@ -31,21 +31,33 @@
 
 #include "STLoaderConfiguration.h"
 
-#include <pqxx/connection>
+#include <pqxx/result.hxx>
 #include <string>
-#include <limits>
 
-namespace wdb { namespace load {
+namespace wdb {
+namespace load {
 
     struct STIStationRecord
     {
-        std::string id_;
-        std::string name_;
-        float       lon_;
-        float       lat_;
-        std::string wmo_;
-        std::string from_;
-        std::string to_;
+    	STIStationRecord(const pqxx::result::tuple & databaseRow);
+
+    	/**
+    	 * Get the position's Well-Known-Text (wkt) representation
+    	 */
+    	std::string wkt() const;
+
+        std::string id;
+        std::string name;
+        float       lon;
+        float       lat;
+        std::string wmo;
+        std::string from;
+        std::string to;
+
+        /**
+         * The where clause that is needed to use this constructor
+         */
+        static const std::string selectWhat;
     };
 
 } } // end namespaces

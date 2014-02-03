@@ -1,9 +1,10 @@
 wdb_stationplacesync_SOURCES = \
 	src/main.cpp \
-        src/DBStructs.h \
-        src/STLoaderConfiguration.h \
+    src/DBStructs.h \
+    src/DBStructs.cpp \
+    src/STLoaderConfiguration.h \
 	src/STLoaderConfiguration.cpp \
-        src/STInfosysDatabaseConnection.h \
+    src/STInfosysDatabaseConnection.h \
 	src/STInfosysDatabaseConnection.cpp \
 	src/WDBDatabaseConnection.h \
 	src/WDBDatabaseConnection.cpp \

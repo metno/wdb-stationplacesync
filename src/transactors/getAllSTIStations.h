@@ -46,6 +46,7 @@
 // std
 #include <string>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -57,8 +58,12 @@ namespace wdb { namespace load {
         /**
          * Default Constructor
          */
-        GetAllSTIStations(vector<STIStationRecord>& out, const std::string& edited_after, const std::string& edited_before = std::string(), const std::string& limit = std::string())
-            : pqxx::transactor<>("GetAllSTIStations"), out_(out), edited_after_(edited_after) //, edited_before_(edited_before), limit_(limit)
+        GetAllSTIStations(vector<STIStationRecord>& out,
+        		const std::string& edited_after, const std::string & earliest )
+            : pqxx::transactor<>("GetAllSTIStations"),
+              out_(out),
+              edited_after_(edited_after),
+              earliest_(earliest)
         {
             // NOOP
         }
@@ -68,30 +73,24 @@ namespace wdb { namespace load {
          */
         void operator()(argument_type &T)
         {
-            std::string query =
-                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime AT TIME ZONE 'UTC', st1.totime AT TIME ZONE 'UTC' FROM station st1 "
-                    " WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
+            std::ostringstream query;
 
-//                    " SELECT st1.stationid, st1.name, st1.lon, st1.lat, st1.wmono, st1.fromtime AT TIME ZONE 'UTC', st1.totime AT TIME ZONE 'UTC' FROM station st1 "
-//                    " JOIN (SELECT stationid, wmono, MAX(fromtime) AS maxtime FROM station WHERE(lat IS NOT NULL AND lon IS NOT NULL) group by stationid, wmono) st2 "
-//                    " ON (st1.stationid = st2.stationid AND st1.wmono = st2.wmono AND st1.fromtime >= st2.maxtime) WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL "
-                    ;
+            query << "SELECT " << STIStationRecord::selectWhat;
+            query << " FROM station st1";
+            query << " WHERE st1.lon IS NOT NULL AND st1.lat IS NOT NULL";
+
+            if ( not earliest_.empty() )
+            	query << " AND st1.totime > " << T.esc(earliest_);
 
             if(!edited_after_.empty())
-                query.append(" AND st1.edited_at >= ").append("'").append(edited_after_).append("'");
+                query << " AND st1.edited_at >= " << T.esc(edited_after_);
 
-//            if(!edited_before_.empty())
-//                query.append(" AND st1.edited_at <= ").append("'").append(edited_before_).append("'");
-
-            query.append(" ORDER BY st1.edited_at DESC ");
-
-//            if(!limit_.empty())
-//                query.append(" LIMIT ").append("'").append(limit_).append("'");
+            query << " ORDER BY st1.edited_at DESC ";
 
 
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
             log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << " query == " << query;
-            R_ = T.exec(query);
+            R_ = T.exec(query.str());
             log.debugStream() <<__FUNCTION__<< " @ line["<< __LINE__ << "] " << " R_.size() == " << R_.size();
         }
 
@@ -103,25 +102,7 @@ namespace wdb { namespace load {
             out_.clear();
             size_t rCount = R_.size();
             for(size_t r = 0; r < rCount; ++r) {
-                STIStationRecord rec;
-                rec.id_   = R_[r][0].as<std::string>();
-                rec.name_ = R_[r][1].as<std::string>();
-                rec.lon_  = R_[r][2].as<float>();
-                rec.lat_  = R_[r][3].as<float>();
-                rec.wmo_  = R_[r][4].is_null() ? std::string() : R_[r][4].as<std::string>();
-
-                rec.from_ = R_[r][5].as<std::string>();
-                rec.to_   = R_[r][6].is_null() ? std::string("infinity") : R_[r][6].as<std::string>();
-
-				if(rec.from_.find("+00") == std::string::npos)
-						rec.from_ += std::string("+00");
-
-				if(rec.to_.find("infinity") == std::string::npos && rec.to_.find("+00") == std::string::npos)
-						rec.to_ += std::string("+00");
-
-//                if(out_.count(rec.id_) != 0)
-//                    std::cout << "EXISTS STATIONID: " << rec.id_<<std::endl;
-
+                STIStationRecord rec(R_[r]);
                 out_.push_back(rec);
             }
             WDB_LOG & log = WDB_LOG::getInstance("wdb.load.getallstistations");
@@ -155,8 +136,7 @@ namespace wdb { namespace load {
         vector<STIStationRecord>& out_;
 
         std::string edited_after_;
-//        std::string edited_before_;
-//        std::string limit_;
+        std::string earliest_;
     };
 
 } } /* end namespaces */

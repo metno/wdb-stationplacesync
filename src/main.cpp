@@ -116,7 +116,7 @@ int main(int argc, char ** argv)
 
         vector<STIStationRecord> sti_stations;
         STInfosysDatabaseConnection stinfosys(config);
-        stinfosys.getAllStations(sti_stations, config.loading().stupdatedafter);
+        stinfosys.getAllStations(sti_stations, config.stinfosys().stupdatedafter, config.loading().earliestValidTime);
 
         wdb.updateStations(sti_stations);
     } catch (pqxx::sql_error & e) {
