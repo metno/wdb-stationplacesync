@@ -1,3 +1,9 @@
+wdb-stationplacesync (1.4.0-1) precise; urgency=low
+
+  * new version
+
+ -- Michael Akinde <michaeloa@met.no>  Mon, 03 Feb 2014 15:08:48 +0100
+
 wdb-stationplacesync (1.3.0-1) precise; urgency=low
 
   * new version
