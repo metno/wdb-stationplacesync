@@ -1,3 +1,9 @@
+wdb-stationplacesync (1.4.1-1) precise; urgency=low
+
+  * New version, with updated default config
+
+ -- Vegard Bønes <vegardb@vpn-116-54.met.no>  Mon, 14 Jul 2014 15:05:42 +0200
+
 wdb-stationplacesync (1.4.0-1) precise; urgency=low
 
   * new version
