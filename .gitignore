@@ -39,3 +39,4 @@ doc/man/stationLoad.1
 /build
 /.cproject
 /.project
+.autotools
